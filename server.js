@@ -20,6 +20,8 @@ var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 
+var globalVariable = 'Hodor';
+
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
@@ -98,13 +100,60 @@ app.get('/api/characters', function(req, res, next) {
 });
 
 /**
- * POST /api/characters
- * Adds new character to the database.
+ * POST /searchSummoner
+ * Searches for summoner in the Riot API
  */
-app.post('/api/characters', function(req, res, next) {
-  var gender = req.body.gender;
-  var characterName = req.body.name;
-  var characterIdLookupUrl = 'https://api.eveonline.com/eve/CharacterID.xml.aspx?names=' + characterName;
+app.post('/searchSummoner', function(req, res, next) {
+
+  //HTML encoding summoner Name
+  var summonerName = encodeURIComponent(req.body.summonerName),
+      region = req.body.region;
+
+  //Riot API Request
+  var riotRequest = 'https://na.api.pvp.net/api/lol/' + region + '/v1.4/summoner/by-name/' + summonerName + '?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
+  async.waterfall([
+    function(callback) {
+      request.get(riotRequest, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          var summonerId = '';
+
+          summonerId = body.split('"id":');
+          console.log(summonerId[1]);
+          summonerId = summonerId[1].split(',')[0];
+          console.log(summonerId);
+
+          callback(error, summonerId);
+
+          //return res.status(200).send({ message: 'success' });
+        }
+
+        else{
+          return res.status(400).send({ message: 'failed' });
+        }
+
+      });
+    },
+    function(summonerId){
+      var gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
+
+      request.get(gamesRequest, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log(body);
+
+          return res.status(200).send({ message: 'success' });
+        }
+
+        else{
+          return res.status(400).send({ message: 'failed' });
+        }
+
+      });
+    }
+  ]);
+
+  /*var summonerName = req.body.summonerName;
+  var region = req.body.region;
+  var characterIdLookupUrl = 'https://api.eveonline.com/eve/CharacterID.xml.aspx?names=' + summonerName;
 
   var parser = new xml2js.Parser();
 
@@ -163,7 +212,7 @@ app.post('/api/characters', function(req, res, next) {
         });
       });
     }
-  ]);
+  ]);*/
 });
 
 /**

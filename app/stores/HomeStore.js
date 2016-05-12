@@ -4,19 +4,39 @@ import HomeActions from '../actions/HomeActions';
 class HomeStore {
   constructor() {
     this.bindActions(HomeActions);
-    this.characters = [];
+    this.summonerName = '';
+    this.region = 'na';
+    this.helpBlock = '';
+    this.summonerNameValidationState = '';
+    this.showChampions = true;
   }
 
-  onGetTwoCharactersSuccess(data) {
-    this.characters = data;
+  onSearchSummonerSuccess(successMessage) {
+    this.summonerNameValidationState = 'has-success';
+    this.helpBlock = successMessage;
+    this.showChampions = false;
   }
 
-  onGetTwoCharactersFail(errorMessage) {
-    toastr.error(errorMessage);
+  onSearchSummonerFail(errorMessage) {
+    this.summonerNameValidationState = 'has-error';
+    this.helpBlock = errorMessage;
+    this.showChampions = true;
   }
 
-  onVoteFail(errorMessage) {
-    toastr.error(errorMessage);
+  onUpdateSummonerName(event) {
+    this.summonerName = event.target.value;
+    this.summonerNameValidationState = '';
+    this.helpBlock = '';
+  }
+
+  onUpdateRegion(event){
+    this.region = event.target.value;
+  }
+
+  onInvalidSummonerName() {
+    this.summonerNameValidationState = 'has-error';
+    this.helpBlock = 'Please enter a character name.';
+    toastr.error('please enter a summoner name');
   }
 }
 

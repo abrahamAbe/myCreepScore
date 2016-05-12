@@ -2,6 +2,9 @@
 @import '../../bower_components/toastr/toastr';
 @import (less) '../../bower_components/magnific-popup/dist/magnific-popup.css';
 
+/* importing component css files */
+@import 'components/home';
+
 /*
  * Bootstrap overrides.
  */
@@ -45,6 +48,15 @@
 
 @screen-sm: 800px;
 
+.hidden{
+  display: none;
+}
+
+.headerContainer{
+  width: 1200px;
+  margin: auto;
+}
+
 html {
   position: relative;
   min-height: 100%;
@@ -53,6 +65,8 @@ html {
 body {
   margin-bottom: 220px;
   -webkit-font-smoothing: antialiased;
+  background-color: white;
+  min-height: 1000px;
 }
 
 footer {

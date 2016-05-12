@@ -3,33 +3,25 @@ import alt from '../alt';
 class HomeActions {
   constructor() {
     this.generateActions(
-      'getTwoCharactersSuccess',
-      'getTwoCharactersFail',
-      'voteFail'
+      'searchSummonerSuccess',
+      'searchSummonerFail',
+      'updateSummonerName',
+      'invalidSummonerName',
+      'updateRegion'
     );
   }
 
-  getTwoCharacters() {
-    $.ajax({ url: '/api/characters' })
-      .done(data => {
-        this.actions.getTwoCharactersSuccess(data);
-      })
-      .fail(jqXhr => {
-        this.actions.getTwoCharactersFail(jqXhr.responseJSON.message);
-      });
-  }
-
-  vote(winner, loser) {
+  searchSummoner(summonerName, region) {
     $.ajax({
-      type: 'PUT',
-      url: '/api/characters' ,
-      data: { winner: winner, loser: loser }
+      type: 'POST',
+      url: '/searchSummoner',
+      data: { summonerName: summonerName, region: region }
     })
-      .done(() => {
-        this.actions.getTwoCharacters();
+      .done((data) => {
+        this.actions.searchSummonerSuccess(data.message);
       })
       .fail((jqXhr) => {
-        this.actions.voteFail(jqXhr.responseJSON.message);
+        this.actions.searchSummonerFail(jqXhr.responseJSON.message);
       });
   }
 }
