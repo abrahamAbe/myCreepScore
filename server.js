@@ -71,7 +71,7 @@ app.post('/searchSummoner', function(req, res, next) {
       region = req.body.region;
 
   //Riot API Request
-  var riotRequest = 'https://na.api.pvp.net/api/lol/' + region + '/v1.4/summoner/by-name/' + summonerName + '?api_key=';
+  var riotRequest = 'https://na.api.pvp.net/api/lol/' + region + '/v1.4/summoner/by-name/' + summonerName + '?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
   async.waterfall([
     function(callback) {
       request.get(riotRequest, function (error, response, body) {
@@ -117,13 +117,13 @@ app.post('/searchSummoner', function(req, res, next) {
         summonerId = summonerData.summonerId
         summonerExists = true
         console.log('SUMMONER EXISTS');
-        gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=';
+        gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
         console.log(gamesRequest);
       }
 
       else{
         summonerId = summonerData;
-        gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=';
+        gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
         console.log('SUMMONER DOESNT EXIST');
         console.log(gamesRequest);
       }
