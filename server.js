@@ -20,20 +20,12 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 
 var globalVariable = 'Hodor';
-var champions = [
-      {
-        id: 1,
-        name: 'Ahri'
-      },
-      {
-        id: 2,
-        name: 'Veigar'
-      },
-      {
-        id: 3,
-        name: 'Rengar'
-      }
-    ];
+var champions = {
+    "1" :  { id: 1, name: 'Ahri'},
+    "2" :  { id: 2, name: 'Veigar'},
+    "3" :  { id: 3, name: 'Rengar'},
+    "9" :  { id: 9, name: 'Fiddlesticks'}
+    };
 
 var app = express();
 
@@ -87,12 +79,12 @@ app.post('/searchSummoner', function(req, res, next) {
                 summoner: summoner,
                 summonerId: summonerId
               }
-              console.log(summonerId + ' Already in DB');
+              //console.log(summonerId + ' Already in DB');
               callback(error, summonerData);
             }
             else{
               var summonerData = summonerId;
-              console.log(summonerId + ' Not in DB');
+              //console.log(summonerId + ' Not in DB');
               callback(error, summonerId);
             }
           })
@@ -110,26 +102,29 @@ app.post('/searchSummoner', function(req, res, next) {
           summonerId = '',
           summonerExists = false;
 
-      console.log(summonerData);
-      console.log(summonerExists);
+      //console.log(summonerData);
+      //console.log(summonerExists);
 
       if(summonerData.summonerId){
-        summonerId = summonerData.summonerId
-        summonerExists = true
-        console.log('SUMMONER EXISTS');
-        gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
-        console.log(gamesRequest);
+        summonerId = summonerData.summonerId;
+        summonerExists = true;
+        //console.log('SUMMONER EXISTS');
+        gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de'; // get rid of duplicate
+        //console.log(gamesRequest);
       }
 
       else{
         summonerId = summonerData;
-        gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
-        console.log('SUMMONER DOESNT EXIST');
-        console.log(gamesRequest);
+        gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de'; // get rid of duplicate
+        //console.log('SUMMONER DOESNT EXIST');
+        //console.log(gamesRequest);
       }
 
       request.get(gamesRequest, function (error, response, body) {
         if (!error && response.statusCode == 200) {
+
+          var gamesData = JSON.parse(body),
+              gamesArray = gamesData.games;
           
           if(summonerExists){
             console.log('updating existing summoner', summonerData.summoner);
@@ -154,15 +149,18 @@ app.post('/searchSummoner', function(req, res, next) {
           }
           else{
             console.log('creating new summoner');
+
             var summoner = new Summoner({
               summonerId: summonerId,
               summonerName: 'Abe'
             });
 
+            summoner = saveSummonerGames(summoner, gamesArray);
+
             summoner.save(function(err) {
-                if (err) return next(err);
-                res.send({ message: summonerId + ' has been added successfully!' });
-              });
+              if (err) return next(err);
+              res.send({ message: summonerId + ' has been added successfully!' });
+            });
           }
         }
 
@@ -174,6 +172,72 @@ app.post('/searchSummoner', function(req, res, next) {
     }
   ]);
 });
+
+function saveSummonerGames(summoner, gamesArray){
+
+  var championsArray = [],
+      remainingGamesArray = [],
+      currentChampion = {
+        championId: 0,
+        championGames: 0
+      },
+      currentId = '';
+
+  for(var i = 0; i < gamesArray.length; i ++){
+      console.log('ID LIST: ' + gamesArray[i].championId);
+  }
+
+  do {
+    for(var i = 0; i < gamesArray.length; i ++){
+      //console.log('ID LIST: ' + games[i].championId);
+      if(i == 0){
+        console.log('Saving first champ! ' + gamesArray[i].championId);
+        if(champions[gamesArray[i].championId]){
+          console.log(champions[gamesArray[i].championId].name);
+          currentChampion.championName = champions[gamesArray[i].championId].name;
+        }
+        currentChampion.championId = gamesArray[i].championId;
+        currentChampion.championGames += 1;
+        championsArray.push(currentChampion);
+
+        /*for(var counter = 0; counter < champions.length; counter ++){
+          console.log(champions[counter].id);
+          if(champions[counter].id == games[i].championId){
+            currentChampion.championName = champions[counter].name;
+          }
+        }*/
+      }
+      else{
+        for(var x = 0; x < championsArray.length; x ++){
+          currentId = gamesArray[i].championId;
+
+          if(currentId == championsArray[x].championId){
+            championsArray[x].championGames += 1;
+          }
+        }
+      }
+    }
+
+    for(var y = 0; y < championsArray.length; y ++){
+      for(var z = 0; z < gamesArray.length; z ++){
+        if(championsArray[y].championId != gamesArray[z].championId){
+          remainingGamesArray.push(gamesArray[z]);
+        }
+      }
+    }
+
+    gamesArray = remainingGamesArray;
+    remainingGamesArray = [];
+
+    //check if champion exists, if it exists pull it out and add averages, if not just add him
+    summoner.championsS6.push(championsArray[0]);
+    championsArray = [];
+    currentChampion.championGames = 0;
+
+  } while(gamesArray.length);
+
+  return summoner;
+}
 
 app.use(function(req, res) {
   Router.match({ routes: routes.default, location: req.url }, function(err, redirectLocation, renderProps) {

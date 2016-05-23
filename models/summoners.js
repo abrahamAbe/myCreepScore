@@ -7,7 +7,8 @@ var summonerSchema = new mongoose.Schema({
   championsS6: [
     {
       championName: String,
-      championId: String
+      championId: String,
+      championGames: Number
     }
   ]
 });

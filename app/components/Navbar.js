@@ -34,30 +34,11 @@ class Navbar extends React.Component {
 
   render() {
     return (
-      <nav className='navbar navbar-default navbar-static-top'>
-        <div className='container'>
-          <button type='button' className='navbar-toggle collapsed' data-toggle='collapse' data-target='#navbar'>
-            <span className='sr-only'>Toggle navigation</span>
-            <span className='icon-bar'></span>
-            <span className='icon-bar'></span>
-            <span className='icon-bar'></span>
-          </button>
-          <Link to='/' className='navbar-brand'>
-            <span ref='triangles' className={'triangles animated ' + this.state.ajaxAnimationClass}>
-              <div className='tri invert'></div>
-              <div className='tri invert'></div>
-              <div className='tri'></div>
-              <div className='tri invert'></div>
-              <div className='tri invert'></div>
-              <div className='tri'></div>
-              <div className='tri invert'></div>
-              <div className='tri'></div>
-              <div className='tri invert'></div>
-            </span>
-            MyCreepScore
-          </Link>
-        </div>
-      </nav>
+      <header className='container headerContainer'>
+        <Link to='/' className='navbar-brand'>
+          <span className="headerTitle">MyCreepScore</span>
+        </Link>
+      </header>
     );
   }
 }
