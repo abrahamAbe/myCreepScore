@@ -19,7 +19,6 @@ var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 
-var globalVariable = 'Hodor';
 var championsData = {
     "266" :  { championId: 266, championName: 'Aatrox', title: 'The Darkin Blade'},
     "103" :  { championId: 103, championName: 'Ahri', title: 'The Nine-Tailed Fox'},
@@ -31,7 +30,6 @@ var championsData = {
     "22" :  { championId: 22, championName: 'Ashe', title: 'The Frost Archer'},
     "136" :  { championId: 136, championName: 'Aurelion Sol', title: 'The Star Forger'},
     "268" :  { championId: 268, championName: 'Azir', title: 'The Emperor of the Sands'},
-
     "432" :  { championId: 432, championName: 'Bard', title: 'The Wandering Caretaker'},
     "53" :  { championId: 53, championName: 'Blitzcrank', title: 'The Great Steam Golem'},
     "63" :  { championId: 63, championName: 'Brand', title: 'The Burning Vengeance'},
@@ -42,7 +40,6 @@ var championsData = {
     "42" :  { championId: 42, championName: 'Corki', title: 'The Daring Bombardier'},
     "122" :  { championId: 122, championName: 'Darius', title: 'The Hand of Noxus'},
     "131" :  { championId: 131, championName: 'Diana', title: 'Scorn of the Moon'},
-    
     "36" :  { championId: 36, championName: 'Dr. Mundo', title: 'The Madman of Zaun'},
     "119" :  { championId: 119, championName: 'Draven', title: 'The Glorious Executioner'},
     "245" :  { championId: 245, championName: 'Ekko', title: 'The Boy Who Shattered Time'},
@@ -53,7 +50,6 @@ var championsData = {
     "114" :  { championId: 114, championName: 'Fiora', title: 'The Grand Duelist'},
     "105" :  { championId: 105, championName: 'Fizz', title: 'The Tidal Trickster'},
     "3" :  { championId: 3, championName: 'Galio', title: 'The Sentinel\'s Sorrow'},
-
     "41" :  { championId: 41, championName: 'Gangplank', title: 'The Saltwater Scourge'},
     "86" :  { championId: 86, championName: 'Garen', title: 'The Might of Demacia'},
     "150" :  { championId: 150, championName: 'Gnar', title: 'The Missing Link'},
@@ -64,7 +60,6 @@ var championsData = {
     "420" :  { championId: 420, championName: 'Illaoi', title: 'The Kraken Priestess'},
     "39" :  { championId: 39, championName: 'Irelia', title: 'The Will of the Blades'},
     "40" :  { championId: 40, championName: 'Janna', title: 'the Storm\'s Fury'},
-
     "59" :  { championId: 59, championName: 'Jarvan IV', title: 'The Exemplar of Demacia'},
     "24" :  { championId: 24, championName: 'Jax', title: 'Grandmaster at Arms'},
     "126" :  { championId: 126, championName: 'Jayce', title: 'The Defender of Tomorrow'},
@@ -75,7 +70,6 @@ var championsData = {
     "30" :  { championId: 30, championName: 'Karthus', title: 'The Deathsinger'},
     "38" :  { championId: 38, championName: 'Kassadin', title: 'The Void Walker'},
     "55" :  { championId: 55, championName: 'Katarina', title: 'The Sinister Blade'},
-
     "10" :  { championId: 10, championName: 'Kayle', title: 'The Judicator'},
     "85" :  { championId: 85, championName: 'Kennen', title: 'The Heart of the Tempest'},
     "121" :  { championId: 121, championName: 'Kha\'Zix', title: 'The Voidreaver'},
@@ -86,7 +80,6 @@ var championsData = {
     "89" :  { championId: 89, championName: 'Leona', title: 'The Radiant Dawn'},
     "127" :  { championId: 127, championName: 'Lissandra', title: 'The Ice Witch'},
     "236" :  { championId: 236, championName: 'Lucian', title: 'The Purifier'},
-
     "117" :  { championId: 117, championName: 'Lulu', title: 'the Fae Sorceress'},
     "99" :  { championId: 99, championName: 'Lux', title: 'The Lady of Luminosity'},
     "54" :  { championId: 54, championName: 'Malphite', title: 'Shard of the Monolith'},
@@ -97,7 +90,6 @@ var championsData = {
     "82" :  { championId: 82, championName: 'Mordekaiser', title: 'the Iron Revenant'},
     "25" :  { championId: 25, championName: 'Morgana', title: 'Fallen Angel'},
     "267" :  { championId: 267, championName: 'Nami', title: 'The Tidecaller'},
-
     "75" :  { championId: 75, championName: 'Nasus', title: 'The Curator of the Sands'},
     "111" :  { championId: 111, championName: 'Nautilus', title: 'The Titan of the Depths'},
     "76" :  { championId: 76, championName: 'Nidalee', title: 'The Bestial Huntress'},
@@ -108,7 +100,6 @@ var championsData = {
     "80" :  { championId: 80, championName: 'Pantheon', title: 'The Artisan of War'},
     "78" :  { championId: 78, championName: 'Poppy', title: 'Keeper of the Hammer'},
     "133" :  { championId: 133, championName: 'Quinn', title: 'Demacia\'s Wings'},
-
     "33" :  { championId: 33, championName: 'Rammus', title: 'the Armordillo'},
     "421" :  { championId: 421, championName: 'Rek\'Sai', title: 'The Void Burrower'},
     "58" :  { championId: 58, championName: 'Renekton', title: 'The Butcher of the Sands'},
@@ -119,7 +110,6 @@ var championsData = {
     "113" :  { championId: 113, championName: 'Sejuani', title: 'The Winter\'s Wrath'},
     "35" :  { championId: 35, championName: 'Shaco', title: 'the Demon Jester'},
     "98" :  { championId: 98, championName: 'Shen', title: 'The Eye of Twilight'},
-
     "102" :  { championId: 102, championName: 'Shyvana', title: 'The Half-Dragon'},
     "27" :  { championId: 27, championName: 'Singed', title: 'The Mad Chemist'},
     "14" :  { championId: 14, championName: 'Sion', title: 'The Undead Juggernaut'},
@@ -130,7 +120,6 @@ var championsData = {
     "50" :  { championId: 50, championName: 'Swain', title: 'The Master Tactician'},
     "134" :  { championId: 134, championName: 'Syndra', title: 'The Dark Sovereign'},
     "223" :  { championId: 223, championName: 'Tahm Kench', title: 'The River King'},
-
     "163" :  { championId: 163, championName: 'Taliyah', title: 'The Stoneweaver'},
     "91" :  { championId: 91, championName: 'Talon', title: 'The Blade\'s Shadow'},
     "44" :  { championId: 44, championName: 'Taric', title: 'The Shield of Valoran'},
@@ -141,7 +130,6 @@ var championsData = {
     "23" :  { championId: 23, championName: 'Tryndamere', title: 'The Barbarian King'},
     "4" :  { championId: 4, championName: 'Twisted Fate', title: 'The Card Master'},
     "29" :  { championId: 29, championName: 'Twitch', title: 'the Plague Rat'},
-
     "77" :  { championId: 77, championName: 'Udyr', title: 'The Spirit Walker'},
     "6" :  { championId: 6, championName: 'Urgot', title: 'The Headsman\'s Pride'},
     "110" :  { championId: 110, championName: 'Varus', title: 'The Arrow of Retribution'},
@@ -152,7 +140,6 @@ var championsData = {
     "112" :  { championId: 112, championName: 'Viktor', title: 'The Machine Herald'},
     "8" :  { championId: 8, championName: 'Vladimir', title: 'The Crimson Reaper'},
     "106" :  { championId: 106, championName: 'Volibear', title: 'the Thunder\'s Roar'},
-
     "19" :  { championId: 19, championName: 'Warwick', title: 'The Blood Hunter'},
     "62" :  { championId: 62, championName: 'Wukong', title: 'The Monkey King'},
     "101" :  { championId: 101, championName: 'Xerath', title: 'The Magus Ascendant'},
@@ -194,6 +181,7 @@ server.listen(app.get('port'), function() {
 /**
  * POST /searchSummoner
  * Searches for summoner in the Riot API
+ * and stores creep score averages in mongoDB
  */
 app.post('/searchSummoner', function(req, res, next) {
 
@@ -202,22 +190,18 @@ app.post('/searchSummoner', function(req, res, next) {
       region = req.body.region;
 
   //Riot API Request
-  var riotRequest = 'https://na.api.pvp.net/api/lol/' + region + '/v1.4/summoner/by-name/' + summonerName + '?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
+  var summonerRequest = 'https://na.api.pvp.net/api/lol/' + region + '/v1.4/summoner/by-name/' + summonerName + '?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
   async.waterfall([
     function(callback) {
-      request.get(riotRequest, function (error, response, body) {
+      request.get(summonerRequest, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-          var summonerId = '',
-              summonerName = '';
+          
 
           summonerId = body.split('"id":');
           summonerId = summonerId[1].split(',')[0];
 
           ApiSummonerName = body.split('"name":"');
           ApiSummonerName = ApiSummonerName[1].split('",')[0];
-
-          //console.log('SUMMONERNAME: ' + summonerName);
-          //console.log('Summoner Info: ' + body);
 
           Summoner.findOne({ summonerId: summonerId }, function(err, summoner) {
             if(summoner){
@@ -238,14 +222,14 @@ app.post('/searchSummoner', function(req, res, next) {
 
         else{
           //if summoner request fails
-          return res.status(400).send({ message: 'Unexpected Error' });
+          return res.status(400).send({ message: 'Whoa, there was an error. Pleas try again.' });
         }
 
       });
     },
     function(summonerData){
-      var gamesRequest = '',
-          summonerId = '',
+      var gamesRequest,
+          summonerId,
           summonerExists = false;
 
       //console.log(summonerData);
@@ -255,26 +239,80 @@ app.post('/searchSummoner', function(req, res, next) {
         summonerId = summonerData.summonerId;
         summonerExists = true;
         //console.log('SUMMONER EXISTS');
-        gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de'; // get rid of duplicate
+        
         //console.log(gamesRequest);
       }
 
       else{
         summonerId = summonerData;
-        gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de'; // get rid of duplicate
+        
         //console.log('SUMMONER DOESNT EXIST');
         //console.log(gamesRequest);
       }
+
+      gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
 
       request.get(gamesRequest, function (error, response, body) {
         if (!error && response.statusCode == 200) {
 
           var gamesData = JSON.parse(body),
-              gamesArray = gamesData.games;
+              gamesResponseArray = gamesData.games,
+              gamesArray = [],
+              newSummonerGamesArray = [],
+              currentLastGameId,
+              summoner;
+
+              //filtering games
+              //TODO move this to it's own function
+              for(var i = 0; i < gamesResponseArray.length; i ++){
+                if(gamesResponseArray[i].gameMode == 'CLASSIC' && gamesResponseArray[i].gameType == 'MATCHED_GAME'
+                  && (gamesResponseArray[i].subType == 'NORMAL' || gamesResponseArray[i].subType == 'RANKED_SOLO_5x5')){
+                  gamesArray.push(gamesResponseArray[i]);
+                }
+              }
+
+              //console.log(gamesArray);
           
-          if(summonerExists){
-            console.log('updating existing summoner', summonerData.summoner);
-            return res.status(200).send({ message: 'success' });
+          //if summoner exists in DB
+          if(summonerExists && gamesArray.length){
+            console.log('updating existing summoner:');
+            console.log(summonerData.summoner);
+            // :)
+            summoner = summonerData.summoner;
+            currentLastGameId = gamesArray[0].gameId;
+
+            //TODO move to it's own function
+            for(var i = 0; i < gamesArray.length; i ++){
+              if(gamesArray[i].gameId != summonerData.summoner.summonerLastGameId){
+                newSummonerGamesArray.push(gamesArray[i]);
+              }
+              else{
+                break;
+              }
+            }
+
+            //Do magic with filtered new games
+            if(newSummonerGamesArray.length){
+              console.log('FILTERED NEW GAMES');
+              console.log(newSummonerGamesArray);
+              console.log('currentLastGameId: ' + currentLastGameId);
+
+              //TODO pass in summoner exists flag
+              summoner = createCsAverages(summoner, summonerExists, newSummonerGamesArray);
+
+              //updating last game ID
+              summoner.summonerLastGameId = currentLastGameId;
+
+              
+              summoner.save(function(err) {
+                if (err) return next(err);
+                res.send({ message: ApiSummonerName + ' has been updated successfully!' });
+              });
+            }
+
+            else{
+              return res.status(200).send({ message: 'success' });
+            }
             /* var champion = {
                   championName: 'Zac',
                   championId: '1'
@@ -293,19 +331,23 @@ app.post('/searchSummoner', function(req, res, next) {
                 return res.status(200).send({message: 'already in DB'})
               }*/
           }
-          else{
+          //if summoner doesn't exist in DB
+          else if(!summonerExists && gamesArray.length){
             console.log('creating new summoner');
+            console.log(gamesArray[0].gameId);
 
-            var summoner = new Summoner({
+              summoner = new Summoner({
               summonerId: summonerId,
-              summonerName: ApiSummonerName
+              summonerName: ApiSummonerName,
+              summonerLastGameId: gamesArray[0].gameId
             });
 
-            summoner = saveSummonerGames(summoner, gamesArray);
+            //TODO pass in summoner exists flag
+            summoner = createCsAverages(summoner, summonerExists, gamesArray);
 
             summoner.save(function(err) {
               if (err) return next(err);
-              res.send({ message: summonerId + ' has been added successfully!' });
+              res.send({ message: ApiSummonerName + ' has been added successfully!' });
             });
           }
         }
@@ -319,18 +361,40 @@ app.post('/searchSummoner', function(req, res, next) {
   ]);
 });
 
-function saveSummonerGames(summoner, gamesArray){
+function createCsAverages(summoner, summonerExists, gamesArray){
 
   var championsArray = [],
       remainingGamesArray = [],
       currentChampion = {
+        championName: '',
         championId: 0,
-        championGames: 0
+        topNormalGames: 0,
+        topNormalCs: 0,
+        midNormalGames: 0,
+        midNormalCs: 0,
+        jungleNormalGames: 0,
+        jungleNormalCs: 0,
+        marksmanNormalGames: 0,
+        marksmanNormalCs: 0,
+        supportNormalGames: 0,
+        supportNormalCs: 0,
+        topRankedGames: 0,
+        topRankedCs: 0,
+        midRankedGames: 0,
+        midRankedCs: 0,
+        jungleRankedGames: 0,
+        jungleRankedCs: 0,
+        marksmanRankedGames: 0,
+        marksmanRankedCs: 0,
+        supportRankedGames: 0,
+        supportRankedCs: 0
       },
-      currentId = '';
+      currentId,
+      championExists = false;
 
+  //TODO remove this sheet
   for(var i = 0; i < gamesArray.length; i ++){
-      console.log('ID LIST: ' + gamesArray[i].championId);
+      console.log('MATCH: ' + gamesArray[i].championId);
   }
 
   do {
@@ -342,8 +406,22 @@ function saveSummonerGames(summoner, gamesArray){
           console.log(championsData[gamesArray[i].championId].championId);
           currentChampion.championName = championsData[gamesArray[i].championId].championName;
         }
+
+        //TODO add an else if champ doesn't exist
+
         currentChampion.championId = gamesArray[i].championId;
-        currentChampion.championGames += 1;
+
+        //call averageCreatorFunction
+        console.log(gamesArray[i].subType);
+        if(gamesArray[i].subType == 'NORMAL'){
+          currentChampion = calculateNormalCsAverages(currentChampion, gamesArray[i]);
+        }
+        else if(gamesArray[i].subType == 'RANKED_SOLO_5x5'){
+          currentChampion = calculateRankedCsAverages(currentChampion, gamesArray[i]);
+        }
+
+        //console.log('RETURNED CURRENT CHAMPION: ' + currentChampion);
+        
         championsArray.push(currentChampion);
 
         /*for(var counter = 0; counter < champions.length; counter ++){
@@ -358,7 +436,13 @@ function saveSummonerGames(summoner, gamesArray){
           currentId = gamesArray[i].championId;
 
           if(currentId == championsArray[x].championId){
-            championsArray[x].championGames += 1;
+            //call averageCreatorFunction
+            if(gamesArray[i].subType == 'NORMAL'){
+              currentChampion = calculateNormalCsAverages(currentChampion, gamesArray[i]);
+            }
+            else if(gamesArray[i].subType == 'RANKED_SOLO_5x5'){
+              currentChampion = calculateRankedCsAverages(currentChampion, gamesArray[i]);
+            }
           }
         }
       }
@@ -375,14 +459,150 @@ function saveSummonerGames(summoner, gamesArray){
     gamesArray = remainingGamesArray;
     remainingGamesArray = [];
 
-    //check if champion exists, if it exists pull it out and add averages, if not just add him
-    summoner.championsS6.push(championsArray[0]);
+    //check if champion exists (passing in summoner exists flag), if it exists pull it out and add averages, if not just add him
+    if(summonerExists){
+      console.log('UPDATING');
+      //console.log(championsArray[0]);
+      console.log(summoner);
+      //summoner.summonerName = 'Hodor';
+      console.log('RECORD: ' );
+      console.log(summoner.championsS6[0]);
+      //summoner.championsS6[0].championName = 'Ive been updated!';
+      for(var i = 0; i < summoner.championsS6.length; i ++){
+        if(summoner.championsS6[i].championId == championsArray[0].championId){
+
+          championExists = true;
+
+          summoner.championsS6[i].topNormalGames += championsArray[0].topNormalGames;
+          summoner.championsS6[i].topNormalCs += championsArray[0].topNormalCs;
+          summoner.championsS6[i].midNormalGames += championsArray[0].midNormalGames;
+          summoner.championsS6[i].midNormalCs += championsArray[0].midNormalCs;
+          summoner.championsS6[i].jungleNormalGames += championsArray[0].jungleNormalGames;
+          summoner.championsS6[i].jungleNormalCs += championsArray[0].jungleNormalCs;
+          summoner.championsS6[i].marksmanNormalGames += championsArray[0].marksmanNormalGames;
+          summoner.championsS6[i].marksmanNormalCs += championsArray[0].marksmanNormalCs;
+          summoner.championsS6[i].supportNormalGames += championsArray[0].supportNormalGames;
+          summoner.championsS6[i].supportNormalCs += championsArray[0].supportNormalCs;
+          summoner.championsS6[i].topRankedGames += championsArray[0].topRankedGames;
+          summoner.championsS6[i].topRankedCs += championsArray[0].topRankedCs;
+          summoner.championsS6[i].midRankedGames += championsArray[0].midRankedGames;
+          summoner.championsS6[i].midRankedCs += championsArray[0].midRankedCs;
+          summoner.championsS6[i].jungleRankedGames += championsArray[0].jungleRankedGames;
+          summoner.championsS6[i].jungleRankedCs += championsArray[0].jungleRankedCs;
+          summoner.championsS6[i].marksmanRankedGames += championsArray[0].marksmanRankedGames;
+          summoner.championsS6[i].marksmanRankedCs += championsArray[0].marksmanRankedCs;
+          summoner.championsS6[i].supportRankedGames += championsArray[0].supportRankedGames;
+          summoner.championsS6[i].supportRankedCs += championsArray[0].supportRankedCs;
+
+        }
+      }
+
+      if(!championExists){
+        summoner.championsS6.push(championsArray[0]);
+      }
+      /*summoner.findOne({ summonerId: summoner.summonerId }, function(err, summoner) {
+        if(summoner){
+          console.log('FOUND IT');
+          //console.log(summonerId + ' Already in DB');
+          callback(error, summonerData);
+        }
+        else{
+          console.log('DIDNT FIND IT');
+        }
+      })*/
+      /*var hodor = summoner.championsS6;
+      console.log('-----------------------------');
+      //console.log(hodor);
+      hodor.findOne({ championId: championsArray[0].championId }, function(err, champion) {
+        if(champion){
+          console.log('CHAMPION EXISTS');
+          console.log(champion);
+        }
+        else{
+          console.log('CHAMPION DOESNT EXIST');
+        }
+      })*/
+    }
+    else{
+      console.log('CREATING');
+      summoner.championsS6.push(championsArray[0]);
+    }
+
+    //TODO mov into it's own function
     championsArray = [];
-    currentChampion.championGames = 0;
+    currentChampion.topNormalGames = 0;
+    currentChampion.midNormalGames = 0;
+    currentChampion.jungleNormalGames = 0;
+    currentChampion.supportNormalGames = 0;
+    currentChampion.marksmanNormalGames = 0;
+
+    currentChampion.topRankedGames = 0;
+    currentChampion.midRankedGames = 0;
+    currentChampion.jungleRankedGames = 0;
+    currentChampion.supportRankedGames = 0;
+    currentChampion.marksmanRankedGames = 0;
+
+    championExists = false;
 
   } while(gamesArray.length);
 
   return summoner;
+}
+
+function calculateNormalCsAverages(currentChampion, currentGame){
+  console.log('calculating AVERAGE');
+  console.log(currentGame.gameId);
+
+  if(currentGame.stats.playerPosition == '1'){
+    console.log('TOP LANE');
+    currentChampion.topNormalGames += 1;
+  }
+  else if(currentGame.stats.playerPosition == '2'){
+    console.log('MID LANE');
+    currentChampion.midNormalGames += 1;
+  }
+  else if(currentGame.stats.playerPosition == '3'){
+    console.log('JUNGLE');
+    currentChampion.jungleNormalGames += 1;
+  }
+  else if(currentGame.stats.playerRole == '2' && currentGame.stats.playerPosition == '4'){
+    console.log('SUPPORT');
+    currentChampion.supportNormalGames += 1;
+  }
+  else if(currentGame.stats.playerRole == '3' && currentGame.stats.playerPosition == '4'){
+    console.log('MARKSMAN');
+    currentChampion.marksmanNormalGames += 1;
+  }
+  
+  return currentChampion;
+}
+
+function calculateRankedCsAverages(currentChampion, currentGame){
+  console.log('calculating AVERAGE');
+  console.log(currentGame.gameId);
+
+  if(currentGame.stats.playerPosition == '1'){
+    console.log('TOP LANE');
+    currentChampion.topRankedGames += 1;
+  }
+  else if(currentGame.stats.playerPosition == '2'){
+    console.log('MID LANE');
+    currentChampion.midRankedGames += 1;
+  }
+  else if(currentGame.stats.playerPosition == '3'){
+    console.log('JUNGLE');
+    currentChampion.jungleRankedGames += 1;
+  }
+  else if(currentGame.stats.playerRole == '2' && currentGame.stats.playerPosition == '4'){
+    console.log('SUPPORT');
+    currentChampion.supportRankedGames += 1;
+  }
+  else if(currentGame.stats.playerRole == '3' && currentGame.stats.playerPosition == '4'){
+    console.log('MARKSMAN');
+    currentChampion.marksmanRankedGames += 1;
+  }
+  
+  return currentChampion;
 }
 
 app.use(function(req, res) {
