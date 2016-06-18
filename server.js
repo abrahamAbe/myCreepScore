@@ -177,6 +177,25 @@ server.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
 
+app.post('/searchForChampion', function(req, res, next) {
+  var championId = req.body.championId;
+
+  console.log('CONSOLE ID ' + championId);
+  console.log('Summoner? ' + Summoner.championsS6);
+
+  /*Summoner.findOne({ championId: championId }, function(err, champion) {
+    if (err) return next(err);
+
+    if (!champion) {
+      return res.status(404).send({ message: 'Character not found.' });
+    }
+    else{
+      res.status(200).send({ message: 'Character found!' });
+    }
+
+    //res.send(character);
+  });*/
+});
 
 /**
  * POST /searchSummoner
@@ -187,34 +206,34 @@ app.post('/searchSummoner', function(req, res, next) {
 
   //HTML encoding summoner name
   var summonerName = encodeURIComponent(req.body.summonerName),
-      region = req.body.region;
+      region = req.body.region,
+      summonerRequest;
 
   //Riot API Request
-  var summonerRequest = 'https://na.api.pvp.net/api/lol/' + region + '/v1.4/summoner/by-name/' + summonerName + '?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
+  //TODO move API key and urls to global variables and replace hardcoded region with dinamic region
+  summonerRequest = 'https://na.api.pvp.net/api/lol/' + region + '/v1.4/summoner/by-name/' + summonerName + '?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
   async.waterfall([
     function(callback) {
       request.get(summonerRequest, function (error, response, body) {
         if (!error && response.statusCode == 200) {
           
-
           summonerId = body.split('"id":');
           summonerId = summonerId[1].split(',')[0];
 
           ApiSummonerName = body.split('"name":"');
           ApiSummonerName = ApiSummonerName[1].split('",')[0];
 
+          //looking for summoner in DB
           Summoner.findOne({ summonerId: summonerId }, function(err, summoner) {
             if(summoner){
               var summonerData = {
                 summoner: summoner,
                 summonerId: summonerId
               }
-              //console.log(summonerId + ' Already in DB');
               callback(error, summonerData);
             }
             else{
               var summonerData = summonerId;
-              //console.log(summonerId + ' Not in DB');
               callback(error, summonerId);
             }
           })
@@ -232,24 +251,16 @@ app.post('/searchSummoner', function(req, res, next) {
           summonerId,
           summonerExists = false;
 
-      //console.log(summonerData);
-      //console.log(summonerExists);
-
       if(summonerData.summonerId){
         summonerId = summonerData.summonerId;
         summonerExists = true;
-        //console.log('SUMMONER EXISTS');
-        
-        //console.log(gamesRequest);
       }
 
       else{
         summonerId = summonerData;
-        
-        //console.log('SUMMONER DOESNT EXIST');
-        //console.log(gamesRequest);
       }
 
+      //TODO move API key and urls to global variables and replace hardcoded region with dinamic region
       gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
 
       request.get(gamesRequest, function (error, response, body) {
@@ -263,47 +274,30 @@ app.post('/searchSummoner', function(req, res, next) {
               summoner;
 
               //filtering games
-              //TODO move this to it's own function
-              for(var i = 0; i < gamesResponseArray.length; i ++){
-                if(gamesResponseArray[i].gameMode == 'CLASSIC' && gamesResponseArray[i].gameType == 'MATCHED_GAME'
-                  && (gamesResponseArray[i].subType == 'NORMAL' || gamesResponseArray[i].subType == 'RANKED_SOLO_5x5')){
-                  gamesArray.push(gamesResponseArray[i]);
-                }
-              }
+              gamesArray = filterGames(gamesArray, gamesResponseArray);
 
-              //console.log(gamesArray);
+              console.log(gamesArray);
           
           //if summoner exists in DB
           if(summonerExists && gamesArray.length){
+
             console.log('updating existing summoner:');
-            console.log(summonerData.summoner);
-            // :)
             summoner = summonerData.summoner;
             currentLastGameId = gamesArray[0].gameId;
 
-            //TODO move to it's own function
-            for(var i = 0; i < gamesArray.length; i ++){
-              if(gamesArray[i].gameId != summonerData.summoner.summonerLastGameId){
-                newSummonerGamesArray.push(gamesArray[i]);
-              }
-              else{
-                break;
-              }
-            }
+            newSummonerGamesArray = getNewGames(gamesArray, summoner, newSummonerGamesArray);
 
             //Do magic with filtered new games
             if(newSummonerGamesArray.length){
               console.log('FILTERED NEW GAMES');
               console.log(newSummonerGamesArray);
               console.log('currentLastGameId: ' + currentLastGameId);
-
-              //TODO pass in summoner exists flag
+              
               summoner = createCsAverages(summoner, summonerExists, newSummonerGamesArray);
 
               //updating last game ID
               summoner.summonerLastGameId = currentLastGameId;
 
-              
               summoner.save(function(err) {
                 if (err) return next(err);
                 res.send({ message: ApiSummonerName + ' has been updated successfully!' });
@@ -311,25 +305,9 @@ app.post('/searchSummoner', function(req, res, next) {
             }
 
             else{
-              return res.status(200).send({ message: 'success' });
+              return res.status(200).send({ message: 'No new games' });
             }
-            /* var champion = {
-                  championName: 'Zac',
-                  championId: '1'
-                };
-                console.log('Champions: ' + champions);
-                for(var i = 0; i < champions.length; i ++){
-                  if(champions[i].id == 1){
-                    console.log(champions[i].name);
-                  }
-                }
-                console.log(summonerId + ' already in db');
-                console.log(err);
-                character.summonerName = 'Hodor';
-                character.champions.push(champion);
-                character.save();
-                return res.status(200).send({message: 'already in DB'})
-              }*/
+
           }
           //if summoner doesn't exist in DB
           else if(!summonerExists && gamesArray.length){
@@ -339,10 +317,10 @@ app.post('/searchSummoner', function(req, res, next) {
               summoner = new Summoner({
               summonerId: summonerId,
               summonerName: ApiSummonerName,
+              summonerRegion: region,
               summonerLastGameId: gamesArray[0].gameId
             });
 
-            //TODO pass in summoner exists flag
             summoner = createCsAverages(summoner, summonerExists, gamesArray);
 
             summoner.save(function(err) {
@@ -365,82 +343,48 @@ function createCsAverages(summoner, summonerExists, gamesArray){
 
   var championsArray = [],
       remainingGamesArray = [],
-      currentChampion = {
-        championName: '',
-        championId: 0,
-        topNormalGames: 0,
-        topNormalCs: 0,
-        midNormalGames: 0,
-        midNormalCs: 0,
-        jungleNormalGames: 0,
-        jungleNormalCs: 0,
-        marksmanNormalGames: 0,
-        marksmanNormalCs: 0,
-        supportNormalGames: 0,
-        supportNormalCs: 0,
-        topRankedGames: 0,
-        topRankedCs: 0,
-        midRankedGames: 0,
-        midRankedCs: 0,
-        jungleRankedGames: 0,
-        jungleRankedCs: 0,
-        marksmanRankedGames: 0,
-        marksmanRankedCs: 0,
-        supportRankedGames: 0,
-        supportRankedCs: 0
-      },
+      currentChampion = createChampionModel(),
       currentId,
-      championExists = false;
-
-  //TODO remove this sheet
-  for(var i = 0; i < gamesArray.length; i ++){
-      console.log('MATCH: ' + gamesArray[i].championId);
-  }
+      championExists = false,
+      dbChampion;
 
   do {
     for(var i = 0; i < gamesArray.length; i ++){
-      //console.log('ID LIST: ' + games[i].championId);
+
       if(i == 0){
-        console.log('Saving first champ! ' + gamesArray[i].championId);
+
         if(championsData[gamesArray[i].championId]){
-          console.log(championsData[gamesArray[i].championId].championId);
+
           currentChampion.championName = championsData[gamesArray[i].championId].championName;
         }
 
-        //TODO add an else if champ doesn't exist
+        //TODO add an else if champ doesn't exist---------------------------------------
 
         currentChampion.championId = gamesArray[i].championId;
 
-        //call averageCreatorFunction
-        console.log(gamesArray[i].subType);
+        //create new champion and add stats
         if(gamesArray[i].subType == 'NORMAL'){
+          //TODO call getPlayerPosition() and pass in champId + teamId
           currentChampion = calculateNormalCsAverages(currentChampion, gamesArray[i]);
         }
-        else if(gamesArray[i].subType == 'RANKED_SOLO_5x5'){
+        else if(gamesArray[i].subType == 'RANKED_SOLO_5x5' || gamesArray[i].subType == 'RANKED_TEAM_5x5' || gamesArray[i].subType == 'RANKED_PREMADE_5x5'){
           currentChampion = calculateRankedCsAverages(currentChampion, gamesArray[i]);
         }
-
-        //console.log('RETURNED CURRENT CHAMPION: ' + currentChampion);
         
         championsArray.push(currentChampion);
 
-        /*for(var counter = 0; counter < champions.length; counter ++){
-          console.log(champions[counter].id);
-          if(champions[counter].id == games[i].championId){
-            currentChampion.championName = champions[counter].name;
-          }
-        }*/
       }
       else{
         for(var x = 0; x < championsArray.length; x ++){
           currentId = gamesArray[i].championId;
 
+          //add remaining games to previously created champion
           if(currentId == championsArray[x].championId){
             //call averageCreatorFunction
             if(gamesArray[i].subType == 'NORMAL'){
               currentChampion = calculateNormalCsAverages(currentChampion, gamesArray[i]);
             }
-            else if(gamesArray[i].subType == 'RANKED_SOLO_5x5'){
+            else if(gamesArray[i].subType == 'RANKED_SOLO_5x5' || gamesArray[i].subType == 'RANKED_TEAM_5x5' || gamesArray[i].subType == 'RANKED_PREMADE_5x5'){
               currentChampion = calculateRankedCsAverages(currentChampion, gamesArray[i]);
             }
           }
@@ -448,13 +392,8 @@ function createCsAverages(summoner, summonerExists, gamesArray){
       }
     }
 
-    for(var y = 0; y < championsArray.length; y ++){
-      for(var z = 0; z < gamesArray.length; z ++){
-        if(championsArray[y].championId != gamesArray[z].championId){
-          remainingGamesArray.push(gamesArray[z]);
-        }
-      }
-    }
+    //deleting games already added to cs averages
+    remainingGamesArray = addRemainingGames(championsArray, gamesArray, remainingGamesArray);
 
     gamesArray = remainingGamesArray;
     remainingGamesArray = [];
@@ -468,60 +407,24 @@ function createCsAverages(summoner, summonerExists, gamesArray){
       console.log('RECORD: ' );
       console.log(summoner.championsS6[0]);
       //summoner.championsS6[0].championName = 'Ive been updated!';
+
       for(var i = 0; i < summoner.championsS6.length; i ++){
+        //if champion alredy in db, pull it out and add new averages
         if(summoner.championsS6[i].championId == championsArray[0].championId){
 
           championExists = true;
+          dbChampion = summoner.championsS6[i];
 
-          summoner.championsS6[i].topNormalGames += championsArray[0].topNormalGames;
-          summoner.championsS6[i].topNormalCs += championsArray[0].topNormalCs;
-          summoner.championsS6[i].midNormalGames += championsArray[0].midNormalGames;
-          summoner.championsS6[i].midNormalCs += championsArray[0].midNormalCs;
-          summoner.championsS6[i].jungleNormalGames += championsArray[0].jungleNormalGames;
-          summoner.championsS6[i].jungleNormalCs += championsArray[0].jungleNormalCs;
-          summoner.championsS6[i].marksmanNormalGames += championsArray[0].marksmanNormalGames;
-          summoner.championsS6[i].marksmanNormalCs += championsArray[0].marksmanNormalCs;
-          summoner.championsS6[i].supportNormalGames += championsArray[0].supportNormalGames;
-          summoner.championsS6[i].supportNormalCs += championsArray[0].supportNormalCs;
-          summoner.championsS6[i].topRankedGames += championsArray[0].topRankedGames;
-          summoner.championsS6[i].topRankedCs += championsArray[0].topRankedCs;
-          summoner.championsS6[i].midRankedGames += championsArray[0].midRankedGames;
-          summoner.championsS6[i].midRankedCs += championsArray[0].midRankedCs;
-          summoner.championsS6[i].jungleRankedGames += championsArray[0].jungleRankedGames;
-          summoner.championsS6[i].jungleRankedCs += championsArray[0].jungleRankedCs;
-          summoner.championsS6[i].marksmanRankedGames += championsArray[0].marksmanRankedGames;
-          summoner.championsS6[i].marksmanRankedCs += championsArray[0].marksmanRankedCs;
-          summoner.championsS6[i].supportRankedGames += championsArray[0].supportRankedGames;
-          summoner.championsS6[i].supportRankedCs += championsArray[0].supportRankedCs;
+          updateChampion(dbChampion, championsArray);
 
         }
       }
 
+      //if champion doesn't exist in db, create new champion record and store it
       if(!championExists){
         summoner.championsS6.push(championsArray[0]);
       }
-      /*summoner.findOne({ summonerId: summoner.summonerId }, function(err, summoner) {
-        if(summoner){
-          console.log('FOUND IT');
-          //console.log(summonerId + ' Already in DB');
-          callback(error, summonerData);
-        }
-        else{
-          console.log('DIDNT FIND IT');
-        }
-      })*/
-      /*var hodor = summoner.championsS6;
-      console.log('-----------------------------');
-      //console.log(hodor);
-      hodor.findOne({ championId: championsArray[0].championId }, function(err, champion) {
-        if(champion){
-          console.log('CHAMPION EXISTS');
-          console.log(champion);
-        }
-        else{
-          console.log('CHAMPION DOESNT EXIST');
-        }
-      })*/
+      
     }
     else{
       console.log('CREATING');
@@ -530,17 +433,8 @@ function createCsAverages(summoner, summonerExists, gamesArray){
 
     //TODO mov into it's own function
     championsArray = [];
-    currentChampion.topNormalGames = 0;
-    currentChampion.midNormalGames = 0;
-    currentChampion.jungleNormalGames = 0;
-    currentChampion.supportNormalGames = 0;
-    currentChampion.marksmanNormalGames = 0;
-
-    currentChampion.topRankedGames = 0;
-    currentChampion.midRankedGames = 0;
-    currentChampion.jungleRankedGames = 0;
-    currentChampion.supportRankedGames = 0;
-    currentChampion.marksmanRankedGames = 0;
+    
+    currentChampion = resetCurrentChampion(currentChampion);
 
     championExists = false;
 
@@ -549,34 +443,110 @@ function createCsAverages(summoner, summonerExists, gamesArray){
   return summoner;
 }
 
+//TODO call match api and pull accurate player position and add player roles for adc position
 function calculateNormalCsAverages(currentChampion, currentGame){
   console.log('calculating AVERAGE');
-  console.log(currentGame.gameId);
 
   if(currentGame.stats.playerPosition == '1'){
     console.log('TOP LANE');
     currentChampion.topNormalGames += 1;
+
+    if(currentGame.stats.minionsKilled){
+      currentChampion.topNormalMinionsKilled += currentGame.stats.minionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilled){
+      currentChampion.topNormalNeutralMinionsKilled += currentGame.stats.neutralMinionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilledYourJungle){
+      currentChampion.topNormalNeutralMinionsKilledYourJungle += currentGame.stats.neutralMinionsKilledYourJungle;
+    }
+    if(currentGame.stats.neutralMinionsKilledEnemyJungle){
+      currentChampion.topNormalNeutralMinionsKilledEnemyJungle += currentGame.stats.neutralMinionsKilledEnemyJungle;
+    }
+    if(currentGame.stats.timePlayed){
+      currentChampion.topNormalTimePlayed += currentGame.stats.timePlayed;
+    }
   }
   else if(currentGame.stats.playerPosition == '2'){
     console.log('MID LANE');
     currentChampion.midNormalGames += 1;
+    if(currentGame.stats.minionsKilled){
+      currentChampion.midNormalMinionsKilled += currentGame.stats.minionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilled){
+      currentChampion.midNormalNeutralMinionsKilled += currentGame.stats.neutralMinionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilledYourJungle){
+      currentChampion.midNormalNeutralMinionsKilledYourJungle += currentGame.stats.neutralMinionsKilledYourJungle; 
+    }
+    if(currentGame.stats.neutralMinionsKilledEnemyJungle){
+      currentChampion.midNormalNeutralMinionsKilledEnemyJungle += currentGame.stats.neutralMinionsKilledEnemyJungle;
+    }
+    if(currentGame.stats.timePlayed){
+      currentChampion.midNormalTimePlayed += currentGame.stats.timePlayed;
+    }
   }
   else if(currentGame.stats.playerPosition == '3'){
     console.log('JUNGLE');
     currentChampion.jungleNormalGames += 1;
+    if(currentGame.stats.minionsKilled){
+      currentChampion.jungleNormalMinionsKilled += currentGame.stats.minionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilled){
+      currentChampion.jungleNormalNeutralMinionsKilled += currentGame.stats.neutralMinionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilledYourJungle){
+      currentChampion.jungleNormalNeutralMinionsKilledYourJungle += currentGame.stats.neutralMinionsKilledYourJungle;
+    }
+    if(currentGame.stats.neutralMinionsKilledEnemyJungle){
+      currentChampion.jungleNormalNeutralMinionsKilledEnemyJungle += currentGame.stats.neutralMinionsKilledEnemyJungle;
+    }
+    if(currentGame.stats.timePlayed){
+      currentChampion.jungleNormalTimePlayed += currentGame.stats.timePlayed;
+    }
   }
   else if(currentGame.stats.playerRole == '2' && currentGame.stats.playerPosition == '4'){
     console.log('SUPPORT');
     currentChampion.supportNormalGames += 1;
+    if(currentGame.stats.minionsKilled){
+      currentChampion.supportNormalMinionsKilled += currentGame.stats.minionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilled){
+      currentChampion.supportNormalNeutralMinionsKilled += currentGame.stats.neutralMinionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilledYourJungle){
+      currentChampion.supportNormalNeutralMinionsKilledYourJungle += currentGame.stats.neutralMinionsKilledYourJungle;
+    }
+    if(currentGame.stats.neutralMinionsKilledEnemyJungle){
+      currentChampion.supportNormalNeutralMinionsKilledEnemyJungle += currentGame.stats.neutralMinionsKilledEnemyJungle;
+    }
+    if(currentGame.stats.timePlayed){
+      currentChampion.supportNormalTimePlayed += currentGame.stats.timePlayed;
+    }
   }
-  else if(currentGame.stats.playerRole == '3' && currentGame.stats.playerPosition == '4'){
+  else if((currentGame.stats.playerRole == '1' || currentGame.stats.playerRole == '3' || currentGame.stats.playerRole == '4') && currentGame.stats.playerPosition == '4'){
     console.log('MARKSMAN');
     currentChampion.marksmanNormalGames += 1;
+    if(currentGame.stats.minionsKilled){
+      currentChampion.marksmanNormalMinionsKilled += currentGame.stats.minionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilled){
+      currentChampion.marksmanNormalNeutralMinionsKilled += currentGame.stats.neutralMinionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilledYourJungle){
+      currentChampion.marksmanNormalNeutralMinionsKilledYourJungle += currentGame.stats.neutralMinionsKilledYourJungle;
+    }
+    if(currentGame.stats.neutralMinionsKilledEnemyJungle){
+      currentChampion.marksmanNormalNeutralMinionsKilledEnemyJungle += currentGame.stats.neutralMinionsKilledEnemyJungle;
+    }
+    if(currentGame.stats.timePlayed){
+      currentChampion.marksmanNormalTimePlayed += currentGame.stats.timePlayed;
+    }
   }
   
   return currentChampion;
 }
-
+//TODO call match api and pull accurate player position and add player roles for adc position
 function calculateRankedCsAverages(currentChampion, currentGame){
   console.log('calculating AVERAGE');
   console.log(currentGame.gameId);
@@ -584,26 +554,367 @@ function calculateRankedCsAverages(currentChampion, currentGame){
   if(currentGame.stats.playerPosition == '1'){
     console.log('TOP LANE');
     currentChampion.topRankedGames += 1;
+    if(currentGame.stats.minionsKilled){
+      currentChampion.topRankedMinionsKilled += currentGame.stats.minionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilled){
+      currentChampion.topRankedNeutralMinionsKilled += currentGame.stats.neutralMinionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilledYourJungle){
+      currentChampion.topRankedNeutralMinionsKilledYourJungle += currentGame.stats.neutralMinionsKilledYourJungle;
+    }
+    if(currentGame.stats.neutralMinionsKilledEnemyJungle){
+      currentChampion.topRankedNeutralMinionsKilledEnemyJungle += currentGame.stats.neutralMinionsKilledEnemyJungle;
+    }
+    if(currentGame.stats.timePlayed){
+      currentChampion.topRankedTimePlayed += currentGame.stats.timePlayed;
+    }
   }
   else if(currentGame.stats.playerPosition == '2'){
     console.log('MID LANE');
     currentChampion.midRankedGames += 1;
+    if(currentGame.stats.minionsKilled){
+      currentChampion.midRankedMinionsKilled += currentGame.stats.minionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilled){
+      currentChampion.midRankedNeutralMinionsKilled += currentGame.stats.neutralMinionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilledYourJungle){
+      currentChampion.midRankedNeutralMinionsKilledYourJungle += currentGame.stats.neutralMinionsKilledYourJungle;
+    }
+    if(currentGame.stats.neutralMinionsKilledEnemyJungle){
+      currentChampion.midRankedNeutralMinionsKilledEnemyJungle += currentGame.stats.neutralMinionsKilledEnemyJungle;
+    }
+    if(currentGame.stats.timePlayed){
+      currentChampion.midRankedTimePlayed += currentGame.stats.timePlayed;
+    }
   }
   else if(currentGame.stats.playerPosition == '3'){
     console.log('JUNGLE');
     currentChampion.jungleRankedGames += 1;
+    if(currentGame.stats.minionsKilled){
+      currentChampion.jungleRankedMinionsKilled += currentGame.stats.minionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilled){
+      currentChampion.jungleRankedNeutralMinionsKilled += currentGame.stats.neutralMinionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilledYourJungle){
+      currentChampion.jungleRankedNeutralMinionsKilledYourJungle += currentGame.stats.neutralMinionsKilledYourJungle;
+    }
+    if(currentGame.stats.neutralMinionsKilledEnemyJungle){
+      currentChampion.jungleRankedNeutralMinionsKilledEnemyJungle += currentGame.stats.neutralMinionsKilledEnemyJungle;
+    }
+    if(currentGame.stats.timePlayed){
+      currentChampion.jungleRankedTimePlayed += currentGame.stats.timePlayed;
+    }
   }
   else if(currentGame.stats.playerRole == '2' && currentGame.stats.playerPosition == '4'){
     console.log('SUPPORT');
     currentChampion.supportRankedGames += 1;
+    if(currentGame.stats.minionsKilled){
+      currentChampion.supportRankedMinionsKilled += currentGame.stats.minionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilled){
+      currentChampion.supportRankedNeutralMinionsKilled += currentGame.stats.neutralMinionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilledYourJungle){
+      currentChampion.supportRankedNeutralMinionsKilledYourJungle += currentGame.stats.neutralMinionsKilledYourJungle;
+    }
+    if(currentGame.stats.neutralMinionsKilledEnemyJungle){
+      currentChampion.supportRankedNeutralMinionsKilledEnemyJungle += currentGame.stats.neutralMinionsKilledEnemyJungle;
+    }
+    if(currentGame.stats.timePlayed){
+      currentChampion.supportRankedTimePlayed += currentGame.stats.timePlayed;
+    }
   }
-  else if(currentGame.stats.playerRole == '3' && currentGame.stats.playerPosition == '4'){
+  else if((currentGame.stats.playerRole == '1' || currentGame.stats.playerRole == '3' || currentGame.stats.playerRole == '4') && currentGame.stats.playerPosition == '4'){
     console.log('MARKSMAN');
     currentChampion.marksmanRankedGames += 1;
+    if(currentGame.stats.minionsKilled){
+      currentChampion.marksmanRankedMinionsKilled += currentGame.stats.minionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilled){
+      currentChampion.marksmanRankedNeutralMinionsKilled += currentGame.stats.neutralMinionsKilled;
+    }
+    if(currentGame.stats.neutralMinionsKilledYourJungle){
+      currentChampion.marksmanRankedNeutralMinionsKilledYourJungle += currentGame.stats.neutralMinionsKilledYourJungle;
+    }
+    if(currentGame.stats.neutralMinionsKilledEnemyJungle){
+      currentChampion.marksmanRankedNeutralMinionsKilledEnemyJungle += currentGame.stats.neutralMinionsKilledEnemyJungle;
+    }
+    if(currentGame.stats.timePlayed){
+      currentChampion.marksmanRankedTimePlayed += currentGame.stats.timePlayed;
+    }
   }
   
   return currentChampion;
 }
+
+function addRemainingGames(championsArray, gamesArray, remainingGamesArray){
+  //adding remaining games to array
+  for(var y = 0; y < championsArray.length; y ++){
+    for(var z = 0; z < gamesArray.length; z ++){
+      if(championsArray[y].championId != gamesArray[z].championId){
+        remainingGamesArray.push(gamesArray[z]);
+      }
+    }
+  }
+
+  return remainingGamesArray;
+}
+
+function createChampionModel(){
+  var currentChampion = {
+        championName: '',
+        championId: 0,
+
+        topNormalGames: 0,
+        topNormalMinionsKilled: 0,
+        topNormalNeutralMinionsKilled: 0,
+        topNormalNeutralMinionsKilledYourJungle: 0,
+        topNormalNeutralMinionsKilledEnemyJungle: 0,
+        topNormalTimePlayed: 0,
+
+        midNormalGames: 0,
+        midNormalMinionsKilled: 0,
+        midNormalNeutralMinionsKilled: 0,
+        midNormalNeutralMinionsKilledYourJungle: 0,
+        midNormalNeutralMinionsKilledEnemyJungle: 0,
+        midNormalTimePlayed: 0,
+
+        jungleNormalGames: 0,
+        jungleNormalMinionsKilled: 0,
+        jungleNormalNeutralMinionsKilled: 0,
+        jungleNormalNeutralMinionsKilledYourJungle: 0,
+        jungleNormalNeutralMinionsKilledEnemyJungle: 0,
+        jungleNormalTimePlayed: 0,
+
+        marksmanNormalGames: 0,
+        marksmanNormalMinionsKilled: 0,
+        marksmanNormalNeutralMinionsKilled: 0,
+        marksmanNormalNeutralMinionsKilledYourJungle: 0,
+        marksmanNormalNeutralMinionsKilledEnemyJungle: 0,
+        marksmanNormalTimePlayed: 0,
+
+        supportNormalGames: 0,
+        supportNormalMinionsKilled: 0,
+        supportNormalNeutralMinionsKilled: 0,
+        supportNormalNeutralMinionsKilledYourJungle: 0,
+        supportNormalNeutralMinionsKilledEnemyJungle: 0,
+        supportNormalTimePlayed: 0,
+
+        topRankedGames: 0,
+        topRankedMinionsKilled: 0,
+        topRankedNeutralMinionsKilled: 0,
+        topRankedNeutralMinionsKilledYourJungle: 0,
+        topRankedNeutralMinionsKilledEnemyJungle: 0,
+        topRankedTimePlayed: 0,
+
+        midRankedGames: 0,
+        midRankedMinionsKilled: 0,
+        midRankedNeutralMinionsKilled: 0,
+        midRankedNeutralMinionsKilledYourJungle: 0,
+        midRankedNeutralMinionsKilledEnemyJungle: 0,
+        midRankedTimePlayed: 0,
+
+        jungleRankedGames: 0,
+        jungleRankedMinionsKilled: 0,
+        jungleRankedNeutralMinionsKilled: 0,
+        jungleRankedNeutralMinionsKilledYourJungle: 0,
+        jungleRankedNeutralMinionsKilledEnemyJungle: 0,
+        jungleRankedTimePlayed: 0,
+
+        marksmanRankedGames: 0,
+        marksmanRankedMinionsKilled: 0,
+        marksmanRankedNeutralMinionsKilled: 0,
+        marksmanRankedNeutralMinionsKilledYourJungle: 0,
+        marksmanRankedNeutralMinionsKilledEnemyJungle: 0,
+        marksmanRankedTimePlayed: 0,
+
+        supportRankedGames: 0,
+        supportRankedMinionsKilled: 0,
+        supportRankedNeutralMinionsKilled: 0,
+        supportRankedNeutralMinionsKilledYourJungle: 0,
+        supportRankedNeutralMinionsKilledEnemyJungle: 0,
+        supportRankedTimePlayed: 0
+      };
+
+  return currentChampion;
+}
+
+function updateChampion(dbChampion, championsArray){
+
+  dbChampion.topNormalGames += championsArray[0].topNormalGames;
+  dbChampion.topNormalMinionsKilled += championsArray[0].topNormalMinionsKilled;
+  dbChampion.topNormalNeutralMinionsKilled += championsArray[0].topNormalNeutralMinionsKilled;
+  dbChampion.topNormalNeutralMinionsKilledYourJungle += championsArray[0].topNormalNeutralMinionsKilledYourJungle;
+  dbChampion.topNormalNeutralMinionsKilledEnemyJungle += championsArray[0].topNormalNeutralMinionsKilledEnemyJungle;
+  dbChampion.topNormalTimePlayed += championsArray[0].topNormalTimePlayed;
+
+  dbChampion.midNormalGames += championsArray[0].midNormalGames;
+  dbChampion.midNormalMinionsKilled += championsArray[0].midNormalMinionsKilled;
+  dbChampion.midNormalNeutralMinionsKilled += championsArray[0].midNormalNeutralMinionsKilled;
+  dbChampion.midNormalNeutralMinionsKilledYourJungle += championsArray[0].midNormalNeutralMinionsKilledYourJungle;
+  dbChampion.midNormalNeutralMinionsKilledEnemyJungle += championsArray[0].midNormalNeutralMinionsKilledEnemyJungle;
+  dbChampion.midNormalTimePlayed += championsArray[0].midNormalTimePlayed;
+
+  dbChampion.jungleNormalGames += championsArray[0].jungleNormalGames;
+  dbChampion.jungleNormalMinionsKilled += championsArray[0].jungleNormalMinionsKilled;
+  dbChampion.jungleNormalNeutralMinionsKilled += championsArray[0].jungleNormalNeutralMinionsKilled;
+  dbChampion.jungleNormalNeutralMinionsKilledYourJungle += championsArray[0].jungleNormalNeutralMinionsKilledYourJungle;
+  dbChampion.jungleNormalNeutralMinionsKilledEnemyJungle += championsArray[0].jungleNormalNeutralMinionsKilledEnemyJungle;
+  dbChampion.jungleNormalTimePlayed += championsArray[0].jungleNormalTimePlayed;
+
+  dbChampion.marksmanNormalGames += championsArray[0].marksmanNormalGames;
+  dbChampion.marksmanNormalMinionsKilled += championsArray[0].marksmanNormalMinionsKilled;
+  dbChampion.marksmanNormalNeutralMinionsKilled += championsArray[0].marksmanNormalNeutralMinionsKilled;
+  dbChampion.marksmanNormalNeutralMinionsKilledYourJungle += championsArray[0].marksmanNormalNeutralMinionsKilledYourJungle;
+  dbChampion.marksmanNormalNeutralMinionsKilledEnemyJungle += championsArray[0].marksmanNormalNeutralMinionsKilledEnemyJungle;
+  dbChampion.marksmanNormalTimePlayed += championsArray[0].marksmanNormalTimePlayed;
+
+  dbChampion.supportNormalGames += championsArray[0].supportNormalGames;
+  dbChampion.supportNormalMinionsKilled += championsArray[0].supportNormalMinionsKilled;
+  dbChampion.supportNormalNeutralMinionsKilled += championsArray[0].supportNormalNeutralMinionsKilled;
+  dbChampion.supportNormalNeutralMinionsKilledYourJungle += championsArray[0].supportNormalNeutralMinionsKilledYourJungle;
+  dbChampion.supportNormalNeutralMinionsKilledEnemyJungle += championsArray[0].supportNormalNeutralMinionsKilledEnemyJungle;
+  dbChampion.supportNormalTimePlayed += championsArray[0].supportNormalTimePlayed;
+
+  dbChampion.topRankedGames += championsArray[0].topRankedGames;
+  dbChampion.topRankedMinionsKilled += championsArray[0].topRankedMinionsKilled;
+  dbChampion.topRankedNeutralMinionsKilled += championsArray[0].topRankedNeutralMinionsKilled;
+  dbChampion.topRankedNeutralMinionsKilledYourJungle += championsArray[0].topRankedNeutralMinionsKilledYourJungle;
+  dbChampion.topRankedNeutralMinionsKilledEnemyJungle += championsArray[0].topRankedNeutralMinionsKilledEnemyJungle;
+  dbChampion.topRankedTimePlayed += championsArray[0].topRankedTimePlayed;
+
+  dbChampion.midRankedGames += championsArray[0].midRankedGames;
+  dbChampion.midRankedMinionsKilled += championsArray[0].midRankedMinionsKilled;
+  dbChampion.midRankedNeutralMinionsKilled += championsArray[0].midRankedNeutralMinionsKilled;
+  dbChampion.midRankedNeutralMinionsKilledYourJungle += championsArray[0].midRankedNeutralMinionsKilledYourJungle
+  dbChampion.midRankedNeutralMinionsKilledEnemyJungle += championsArray[0].midRankedNeutralMinionsKilledEnemyJungle
+  dbChampion.midRankedTimePlayed += championsArray[0].midRankedTimePlayed;
+
+  dbChampion.jungleRankedGames += championsArray[0].jungleRankedGames;
+  dbChampion.jungleRankedMinionsKilled += championsArray[0].jungleRankedMinionsKilled;
+  dbChampion.jungleRankedNeutralMinionsKilled += championsArray[0].jungleRankedNeutralMinionsKilled;
+  dbChampion.jungleRankedNeutralMinionsKilledYourJungle += championsArray[0].jungleRankedNeutralMinionsKilledYourJungle;
+  dbChampion.jungleRankedNeutralMinionsKilledEnemyJungle += championsArray[0].jungleRankedNeutralMinionsKilledEnemyJungle;
+  dbChampion.jungleRankedTimePlayed += championsArray[0].jungleRankedTimePlayed;
+
+  dbChampion.marksmanRankedGames += championsArray[0].marksmanRankedGames;
+  dbChampion.marksmanRankedMinionsKilled += championsArray[0].marksmanRankedMinionsKilled;
+  dbChampion.marksmanRankedNeutralMinionsKilled += championsArray[0].marksmanRankedNeutralMinionsKilled;
+  dbChampion.marksmanRankedNeutralMinionsKilledYourJungle += championsArray[0].marksmanRankedNeutralMinionsKilledYourJungle;
+  dbChampion.marksmanRankedNeutralMinionsKilledEnemyJungle += championsArray[0].marksmanRankedNeutralMinionsKilledEnemyJungle;
+  dbChampion.marksmanRankedTimePlayed += championsArray[0].marksmanRankedTimePlayed;
+
+  dbChampion.supportRankedGames += championsArray[0].supportRankedGames;
+  dbChampion.supportRankedMinionsKilled += championsArray[0].supportRankedMinionsKilled;
+  dbChampion.supportRankedNeutralMinionsKilled += championsArray[0].supportRankedNeutralMinionsKilled;
+  dbChampion.supportRankedNeutralMinionsKilledYourJungle += championsArray[0].supportRankedNeutralMinionsKilledYourJungle;
+  dbChampion.supportRankedNeutralMinionsKilledEnemyJungle += championsArray[0].supportRankedNeutralMinionsKilledEnemyJungle;
+  dbChampion.supportRankedTimePlayed += championsArray[0].supportRankedTimePlayed;
+}
+
+function getNewGames(gamesArray, summoner, newSummonerGamesArray){
+
+  for(var i = 0; i < gamesArray.length; i ++){
+    if(gamesArray[i].gameId != summoner.summonerLastGameId){
+      newSummonerGamesArray.push(gamesArray[i]);
+    }
+    else{
+      break;
+    }
+  }
+
+  return newSummonerGamesArray;
+}
+
+function resetCurrentChampion(currentChampion){
+  currentChampion.topNormalGames = 0;
+  currentChampion.topNormalMinionsKilled = 0;
+  currentChampion.topNormalNeutralMinionsKilled = 0;
+  currentChampion.topNormalNeutralMinionsKilledYourJungle = 0;
+  currentChampion.topNormalNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.topNormalTimePlayed = 0;
+
+  currentChampion.midNormalGames = 0;
+  currentChampion.midNormalMinionsKilled = 0;
+  currentChampion.midNormalNeutralMinionsKilled = 0;
+  currentChampion.midNormalNeutralMinionsKilledYourJungle = 0;
+  currentChampion.midNormalNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.midNormalTimePlayed = 0;
+
+  currentChampion.jungleNormalGames = 0;
+  currentChampion.jungleNormalMinionsKilled = 0;
+  currentChampion.jungleNormalNeutralMinionsKilled = 0;
+  currentChampion.jungleNormalNeutralMinionsKilledYourJungle = 0;
+  currentChampion.jungleNormalNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.jungleNormalTimePlayed = 0;
+
+  currentChampion.supportNormalGames = 0;
+  currentChampion.supportNormalMinionsKilled = 0;
+  currentChampion.supportNormalNeutralMinionsKilled = 0;
+  currentChampion.supportNormalNeutralMinionsKilledYourJungle = 0;
+  currentChampion.supportNormalNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.supportNormalTimePlayed = 0;
+
+  currentChampion.marksmanNormalGames = 0;
+  currentChampion.marksmanNormalMinionsKilled = 0;
+  currentChampion.marksmanNormalNeutralMinionsKilled = 0;
+  currentChampion.marksmanNormalNeutralMinionsKilledYourJungle = 0;
+  currentChampion.marksmanNormalNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.marksmanNormalTimePlayed = 0;
+
+  //RANKED GAMES
+  currentChampion.topRankedGames = 0;
+  currentChampion.topRankedMinionsKilled = 0;
+  currentChampion.topRankedNeutralMinionsKilled = 0;
+  currentChampion.topRankedNeutralMinionsKilledYourJungle = 0;
+  currentChampion.topRankedNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.topRankedTimePlayed = 0;
+
+  currentChampion.midRankedGames = 0;
+  currentChampion.midRankedMinionsKilled = 0;
+  currentChampion.midRankedNeutralMinionsKilled = 0;
+  currentChampion.midRankedNeutralMinionsKilledYourJungle = 0;
+  currentChampion.midRankedNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.midRankedTimePlayed = 0;
+
+  currentChampion.jungleRankedGames = 0;
+  currentChampion.jungleRankedMinionsKilled = 0;
+  currentChampion.jungleRankedNeutralMinionsKilled = 0;
+  currentChampion.jungleRankedNeutralMinionsKilledYourJungle = 0;
+  currentChampion.jungleRankedNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.jungleRankedTimePlayed = 0;
+
+  currentChampion.supportRankedGames = 0;
+  currentChampion.supportRankedMinionsKilled = 0;
+  currentChampion.supportRankedNeutralMinionsKilled = 0;
+  currentChampion.supportRankedNeutralMinionsKilledYourJungle = 0;
+  currentChampion.supportRankedNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.supportRankedTimePlayed = 0;
+
+  currentChampion.marksmanRankedGames = 0;
+  currentChampion.marksmanRankedMinionsKilled = 0;
+  currentChampion.marksmanRankedNeutralMinionsKilled = 0;
+  currentChampion.marksmanRankedNeutralMinionsKilledYourJungle = 0;
+  currentChampion.marksmanRankedNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.marksmanRankedTimePlayed = 0;
+
+  return currentChampion;
+}
+
+function filterGames(gamesArray, gamesResponseArray){
+  for(var i = 0; i < gamesResponseArray.length; i ++){
+    if(gamesResponseArray[i].gameMode == 'CLASSIC' && gamesResponseArray[i].gameType == 'MATCHED_GAME'
+      && (gamesResponseArray[i].subType == 'NORMAL' || gamesResponseArray[i].subType == 'RANKED_SOLO_5x5' || gamesResponseArray[i].subType == 'RANKED_TEAM_5x5'
+        || gamesResponseArray[i].subType == 'RANKED_PREMADE_5x5')){
+      gamesArray.push(gamesResponseArray[i]);
+    }
+  }
+
+  return gamesArray;
+} 
 
 app.use(function(req, res) {
   Router.match({ routes: routes.default, location: req.url }, function(err, redirectLocation, renderProps) {

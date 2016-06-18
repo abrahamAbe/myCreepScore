@@ -9,6 +9,13 @@ class HomeStore {
     this.helpBlock = '';
     this.summonerNameValidationState = '';
     this.showChampions = true;
+    this.champions = [
+      { championId: 266, championName: 'Aatrox', title: 'The Darkin Blade'},
+      { championId: 103, championName: 'Ahri', title: 'The Nine-Tailed Fox'},
+      { championId: 84, championName: 'Akali', title: 'The Fist of Shadow'},
+      { championId: 12, championName: 'Alistar', title: 'The Minotaur'},
+      { championId: 32, championName: 'Amumu', title: 'The Sad Mummy'}
+    ];
   }
 
   onSearchSummonerSuccess(successMessage) {

@@ -5,6 +5,8 @@ class HomeActions {
     this.generateActions(
       'searchSummonerSuccess',
       'searchSummonerFail',
+      'searchForChampionSuccess',
+      'searchForChampionFail',
       'updateSummonerName',
       'invalidSummonerName',
       'updateRegion'
@@ -24,6 +26,22 @@ class HomeActions {
         this.actions.searchSummonerFail(jqXhr.responseJSON.message);
       });
   }
+
+  searchForChampion(championId){
+    console.log('SEARCHING ' + championId);
+    $.ajax({ 
+        type: 'POST',
+        url: '/searchForChampion',
+        data: { championId: championId } 
+      })
+      .done((data) => {
+        this.actions.searchForChampionSuccess(data);
+      })
+      .fail((jqXhr) => {
+        this.actions.searchForChampionFail(jqXhr);
+      });
+  }
+
 }
 
 export default alt.createActions(HomeActions);

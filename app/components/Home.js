@@ -37,7 +37,22 @@ class Home extends React.Component {
     }
   }
 
+  searchForChampion(championId){
+    HomeActions.searchForChampion(championId);
+  }
+
   render() {
+    let championGrid = this.state.champions.map((champion) => {
+      if(!this.state.showChampions){
+      return (
+        <li key={champion.championId}>
+        {this.searchForChampion(champion.championId)}
+          <span className={'champDisabled'}>{champion.championName}</span>
+        </li>
+      )
+    }
+    });
+
     return (
       <div className='homeMainContainer container'>
         <div className='searchBarContainer'>
@@ -63,9 +78,13 @@ class Home extends React.Component {
             </select>
             <button type='submit' className='btn summonerSearchBtn'>Go</button>
             <span className='help-block searchBarHelperText'>{this.state.helpBlock}</span>
+
           </form>
         </div>
         <div className={this.state.showChampions ? 'hidden' : ''}>Hodor</div>
+        <ul className='list-inline'>
+          <span>{championGrid}</span>
+        </ul>
       </div>
     );
   }
