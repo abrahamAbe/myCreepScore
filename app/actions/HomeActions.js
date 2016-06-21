@@ -20,15 +20,17 @@ class HomeActions {
       data: { summonerName: summonerName, region: region }
     })
       .done((data) => {
-        this.actions.searchSummonerSuccess(data.message);
+        this.actions.searchSummonerSuccess(data);
       })
       .fail((jqXhr) => {
         this.actions.searchSummonerFail(jqXhr.responseJSON.message);
       });
   }
 
-  searchForChampion(championId){
-    console.log('SEARCHING ' + championId);
+  searchForChampion(championId, championsArray){
+    console.log('SEARCHING: ' + championId.hodor);
+    console.log('SEARCHING: ' + championId.championId);
+    console.log('CHAMPIONS: ' + championsArray);
     $.ajax({ 
         type: 'POST',
         url: '/searchForChampion',

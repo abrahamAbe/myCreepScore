@@ -305,7 +305,7 @@ app.post('/searchSummoner', function(req, res, next) {
             }
 
             else{
-              return res.status(200).send({ message: 'No new games' });
+              return res.status(200).send({ message: 'No new games', summoner: summoner });
             }
 
           }
@@ -325,7 +325,7 @@ app.post('/searchSummoner', function(req, res, next) {
 
             summoner.save(function(err) {
               if (err) return next(err);
-              res.send({ message: ApiSummonerName + ' has been added successfully!' });
+              res.send({ message: ApiSummonerName + ' has been added successfully!', summoner: summoner });
             });
           }
         }

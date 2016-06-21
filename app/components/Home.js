@@ -8,6 +8,9 @@ class Home extends React.Component {
     super(props);
     this.state = HomeStore.getState();
     this.onChange = this.onChange.bind(this);
+
+    console.log('HOME STORE AT MAIN PAGE');
+    console.log(this.state);
   }
 
   componentDidMount() {
@@ -43,12 +46,27 @@ class Home extends React.Component {
 
   render() {
     let championGrid = this.state.champions.map((champion) => {
-      if(!this.state.showChampions){
+      if(!this.state.showChampions && this.state.championsArray){
+        var championsArray = this.state.championsArray;
+        //console.log(championsArray);
+        //champion.hodor = 'hold da door';
+        for(var i = 0; i < championsArray.length; i ++){
+          //console.log(championsArray[i]);
+          if(championsArray[i].championId == champion.championId){
+            console.log('FOUND CHAMPION');
+            console.log(championsArray[i]);
+            champion.activeChampion = true;
+          }
+        }
       return (
-        <li key={champion.championId}>
-        {this.searchForChampion(champion.championId)}
-          <span className={'champDisabled'}>{champion.championName}</span>
-        </li>
+        <div className="championPortraitContainer" key={champion.championId}>
+          <div className={champion.activeChampion ? 'championContentEnabled' : 'championContentDisabled'}>
+            <Link to={'/champion/' + champion.championId}>
+              <img className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/' + champion.championName + '.png'} />
+              <div className="championName">{champion.championName}</div>
+            </Link>
+          </div>
+        </div>
       )
     }
     });
@@ -81,7 +99,7 @@ class Home extends React.Component {
 
           </form>
         </div>
-        <div className={this.state.showChampions ? 'hidden' : ''}>Hodor</div>
+        <div className={this.state.showChampions ? 'hidden' : ''}></div>
         <ul className='list-inline'>
           <span>{championGrid}</span>
         </ul>
