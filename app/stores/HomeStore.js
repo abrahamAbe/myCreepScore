@@ -11,7 +11,7 @@ class HomeStore {
     this.showChampions = true;
     this.championsArray;
     this.champions = [
-      { championId: 266, championName: 'Aatrox', title: 'The Darkin Blade'},
+      { championId: 266, championName: 'Aatrox', title: 'The Darkin Bladee'},
       { championId: 103, championName: 'Ahri', title: 'The Nine-Tailed Fox'},
       { championId: 84, championName: 'Akali', title: 'The Fist of Shadow'},
       { championId: 12, championName: 'Alistar', title: 'The Minotaur'},
