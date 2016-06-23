@@ -48,10 +48,7 @@ class Home extends React.Component {
     let championGrid = this.state.champions.map((champion) => {
       if(!this.state.showChampions && this.state.championsArray){
         var championsArray = this.state.championsArray;
-        //console.log(championsArray);
-        //champion.hodor = 'hold da door';
         for(var i = 0; i < championsArray.length; i ++){
-          //console.log(championsArray[i]);
           if(championsArray[i].championId == champion.championId){
             console.log('FOUND CHAMPION');
             console.log(championsArray[i]);
@@ -60,10 +57,9 @@ class Home extends React.Component {
         }
       return (
         <div className="championPortraitContainer" key={champion.championId}>
-          <div className={champion.activeChampion ? 'championContentEnabled' : 'championContentDisabled'}>
+          <div className={champion.activeChampion ? '' : 'championContentDisabled'}>
             <Link to={'/champion/' + champion.championId}>
-              <img className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/' + champion.championName + '.png'} />
-              <div className="championName">{champion.championName}</div>
+              <img className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/champion/' + champion.championName + '.png'} />
             </Link>
           </div>
         </div>
@@ -96,13 +92,12 @@ class Home extends React.Component {
             </select>
             <button type='submit' className='btn summonerSearchBtn'>Go</button>
             <span className='help-block searchBarHelperText'>{this.state.helpBlock}</span>
-
           </form>
         </div>
         <div className={this.state.showChampions ? 'hidden' : ''}></div>
-        <ul className='list-inline'>
-          <span>{championGrid}</span>
-        </ul>
+        <div className='gridContainer'>
+          <div>{championGrid}</div>
+        </div>
       </div>
     );
   }

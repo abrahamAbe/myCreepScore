@@ -132,7 +132,7 @@ class HomeStore {
       { championId: 8, championName: 'Vladimir', title: 'The Crimson Reaper'},
       { championId: 106, championName: 'Volibear', title: 'the Thunder\'s Roar'},
       { championId: 19, championName: 'Warwick', title: 'The Blood Hunter'},
-      { championId: 62, championName: 'Wukong', title: 'The Monkey King'},
+      { championId: 62, championName: 'MonkeyKing', title: 'The Monkey King'},
       { championId: 101, championName: 'Xerath', title: 'The Magus Ascendant'},
       { championId: 5, championName: 'XinZhao', title: 'The Seneschal of Demacia'},
       { championId: 157, championName: 'Yasuo', title: 'The Unforgiven'},
