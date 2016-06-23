@@ -5,7 +5,7 @@ import Footer from './Footer';
 class App extends React.Component {
   render() {
     return (
-      <div className='mainAppContainer'>
+      <div>
       	<Navbar history={this.props.history} />
         {this.props.children}
         <Footer />

@@ -6,6 +6,9 @@
 @import 'components/home';
 @import 'components/header';
 
+/* importing mixins */
+@import 'components/mixins';
+
 /*
  * Bootstrap overrides.
  */
@@ -51,15 +54,6 @@
 
 .hidden{
   display: none;
-}
-
-.headerContainer{
-  width: 1200px;
-  margin: auto;
-
-  @media (max-width: 1200px) {
-    width: 100%;
-  }
 }
 
 html {
