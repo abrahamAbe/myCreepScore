@@ -1,13 +1,17 @@
 .homeMainContainer{
-	background-color: gray;
+
+	background-color: #F8F8FA;
+	padding-top: 15px;
+	padding-bottom: 50px;
+	min-height: 790px;
 
 	.searchBarContainer{
 		width: 350px;
 		margin: auto;
+		text-align: center;
 
 		.responsive(750px, {
 	        width: 100%;
-			text-align: center;
 	    });
 
 		.searchBar{
@@ -23,6 +27,8 @@
 		.regionSelect{
 			height: 34px;
 			margin-right: 5px;
+			margin-top: 0px;
+			vertical-align: top;
 		}
 
 		.summonerSearchBtn{
@@ -35,6 +41,25 @@
 
 		.searchBarHelperText{
 			color: blue;
+		}
+	}
+
+	.summonerInfoContainer{
+		margin: auto;
+		margin-top: 50px;
+		margin-bottom: 50px;
+		text-align: center;
+
+		.summonerInfoIcon{
+			height: 100px;
+			width: 100px;
+			border-radius: 5px;
+			margin-bottom: 10px;
+		}
+
+		.summonerInfoName{
+			font-size: 25px;
+			fong-weight: bold;
 		}
 	}
 

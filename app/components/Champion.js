@@ -12,7 +12,7 @@ class Champion extends React.Component {
 
     console.log('HODOR HOME STORE');
     console.log(this.homeStore);
-    this.displayData = this.homeStore.championsArray[0].championName;
+    this.displayData = this.homeStore.championsArray[1].championName;
   }
 
   componentDidMount() {

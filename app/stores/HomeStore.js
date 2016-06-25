@@ -5,11 +5,13 @@ class HomeStore {
   constructor() {
     this.bindActions(HomeActions);
     this.summonerName = '';
+    this.apiSummonerName = '';
     this.region = 'na';
     this.helpBlock = '';
     this.summonerNameValidationState = '';
     this.showChampions = true;
     this.championsArray;
+    this.profileIconId = '666';
     this.champions = [
       { championId: 266, championName: 'Aatrox', title: 'The Darkin Bladee'},
       { championId: 103, championName: 'Ahri', title: 'The Nine-Tailed Fox'},
@@ -150,8 +152,13 @@ class HomeStore {
     this.helpBlock = summonerData.message;
     this.showChampions = false;
     console.log(this.helpBlock);
+    console.log('SUMMONER DATAAAAAAAAAAAAAAA');
+    console.log(summonerData.summoner);
     console.log(summonerData.summoner.championsS6);
+    console.log(summonerData.profileIconId);
     this.championsArray = summonerData.summoner.championsS6;
+    this.profileIconId = summonerData.profileIconId;
+    this.apiSummonerName = summonerData.summoner.summonerName;
   }
 
   onSearchSummonerFail(errorMessage) {

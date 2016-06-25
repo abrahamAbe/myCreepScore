@@ -4,7 +4,8 @@
 
 /* importing component css files */
 @import 'components/home';
-@import 'components/header';
+@import 'components/navbar';
+@import 'components/footer';
 
 /* importing mixins */
 @import 'components/mixins';
@@ -52,20 +53,15 @@
 
 @screen-sm: 800px;
 
-.hidden{
-  display: none;
-}
-
 html {
   position: relative;
   min-height: 100%;
 }
 
 body {
-  margin-bottom: 220px;
+  margin-bottom: 100px;
   -webkit-font-smoothing: antialiased;
   background-color: white;
-  min-height: 1000px;
 }
 
 footer {

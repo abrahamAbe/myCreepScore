@@ -12,16 +12,6 @@ class Navbar extends React.Component {
 
   componentDidMount() {
     NavbarStore.listen(this.onChange);
-
-    $(document).ajaxStart(() => {
-      NavbarActions.updateAjaxAnimation('fadeIn');
-    });
-
-    $(document).ajaxComplete(() => {
-      setTimeout(() => {
-        NavbarActions.updateAjaxAnimation('fadeOut');
-      }, 750);
-    });
   }
 
   componentWillUnmount() {
@@ -34,11 +24,13 @@ class Navbar extends React.Component {
 
   render() {
     return (
-      <header className='container'>
-        <Link to='/' className='navbar-brand'>
-          <span className="headerTitle">MyCreepScore</span>
-        </Link>
-      </header>
+      <div className="navBarContainer">
+        <header className='container'>
+          <Link to='/' className='navbar-brand'>
+            <span className="navBarTitle">MyCreepScore</span>
+          </Link>
+        </header>
+      </div>
     );
   }
 }

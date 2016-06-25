@@ -55,16 +55,16 @@ class Home extends React.Component {
             champion.activeChampion = true;
           }
         }
-      return (
-        <div className="championPortraitContainer" key={champion.championId}>
-          <div className={champion.activeChampion ? '' : 'championContentDisabled'}>
-            <Link to={'/champion/' + champion.championId}>
-              <img className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/champion/' + champion.championName + '.png'} />
-            </Link>
+        return (
+          <div className="championPortraitContainer" key={champion.championId}>
+            <div className={champion.activeChampion ? '' : 'championContentDisabled'}>
+              <Link to={'/champion/' + champion.championId}>
+                <img className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/champion/' + champion.championName + '.png'} />
+              </Link>
+            </div>
           </div>
-        </div>
-      )
-    }
+        )
+      }
     });
 
     return (
@@ -94,7 +94,10 @@ class Home extends React.Component {
             <span className='help-block searchBarHelperText'>{this.state.helpBlock}</span>
           </form>
         </div>
-        <div className={this.state.showChampions ? 'hidden' : ''}></div>
+        <div className={this.state.showChampions ? 'hidden' : 'summonerInfoContainer'}>
+          <img className="summonerInfoIcon" src={'http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/' + this.state.profileIconId + '.png'} />
+          <div className="summonerInfoName">{this.state.apiSummonerName}</div>
+        </div>
         <div className='gridContainer'>
           <div>{championGrid}</div>
         </div>

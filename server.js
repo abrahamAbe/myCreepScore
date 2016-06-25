@@ -223,18 +223,28 @@ app.post('/searchSummoner', function(req, res, next) {
           ApiSummonerName = body.split('"name":"');
           ApiSummonerName = ApiSummonerName[1].split('",')[0];
 
+          profileIconId = body.split('"profileIconId":');
+          profileIconId = profileIconId[1].split(',')[0];
+
           //looking for summoner in DB
           Summoner.findOne({ summonerId: summonerId }, function(err, summoner) {
             if(summoner){
+              console.log('SUMMONER IN DB');
               var summonerData = {
                 summoner: summoner,
-                summonerId: summonerId
+                summonerId: summonerId,
+                summonerExists: true,
+                profileIconId: profileIconId
               }
               callback(error, summonerData);
             }
             else{
-              var summonerData = summonerId;
-              callback(error, summonerId);
+              console.log('SUMMONER NOT IN DB');
+              var summonerData = {
+                summonerId: summonerId,
+                profileIconId: profileIconId
+              };
+              callback(error, summonerData);
             }
           })
         }
@@ -251,17 +261,22 @@ app.post('/searchSummoner', function(req, res, next) {
           summonerId,
           summonerExists = false;
 
-      if(summonerData.summonerId){
+      if(summonerData.summonerExists){
         summonerId = summonerData.summonerId;
         summonerExists = true;
+        console.log('SUMMONER EXISTS');
       }
 
       else{
-        summonerId = summonerData;
+        summonerId = summonerData.summonerId;
+        console.log('SUMMONER DOESNT EXIST');
       }
 
       //TODO move API key and urls to global variables and replace hardcoded region with dinamic region
       gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
+
+      console.log('GAMES REQUEST');
+      console.log(gamesRequest);
 
       request.get(gamesRequest, function (error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -300,12 +315,12 @@ app.post('/searchSummoner', function(req, res, next) {
 
               summoner.save(function(err) {
                 if (err) return next(err);
-                res.send({ message: ApiSummonerName + ' has been updated successfully!' });
+                res.send({ message: ApiSummonerName + ' has been updated successfully!', profileIconId: summonerData.profileIconId });
               });
             }
 
             else{
-              return res.status(200).send({ message: 'No new games', summoner: summoner });
+              return res.status(200).send({ message: 'No new games', summoner: summoner , profileIconId: summonerData.profileIconId});
             }
 
           }
@@ -325,7 +340,7 @@ app.post('/searchSummoner', function(req, res, next) {
 
             summoner.save(function(err) {
               if (err) return next(err);
-              res.send({ message: ApiSummonerName + ' has been added successfully!', summoner: summoner });
+              res.send({ message: ApiSummonerName + ' has been added successfully!', summoner: summoner, profileIconId: summonerData.profileIconId });
             });
           }
         }

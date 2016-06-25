@@ -6,16 +6,10 @@ class Footer extends React.Component {
   render() {
 
     return (
-      <footer>
-        <div className='container'>
-          <div className='row'>
-            <div className='col-sm-5'>
-              Hodor
-            </div>
-            <div className='col-sm-7 hidden-xs'>
-              Hodor Hodor
-            </div>
-          </div>
+      <footer className="footerContainer">
+        <div className='container footerContent'>
+          My Creep Score isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. 
+          League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
         </div>
       </footer>
     );
