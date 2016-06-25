@@ -49,9 +49,8 @@ class Home extends React.Component {
       if(!this.state.showChampions && this.state.championsArray){
         var championsArray = this.state.championsArray;
         for(var i = 0; i < championsArray.length; i ++){
+          //if champion is in DB
           if(championsArray[i].championId == champion.championId){
-            console.log('FOUND CHAMPION');
-            console.log(championsArray[i]);
             champion.activeChampion = true;
           }
         }
@@ -91,7 +90,6 @@ class Home extends React.Component {
                     <option value="tr">TR</option>
             </select>
             <button type='submit' className='btn summonerSearchBtn'>Go</button>
-            <span className='help-block searchBarHelperText'>{this.state.helpBlock}</span>
           </form>
         </div>
         <div className={this.state.showChampions ? 'hidden' : 'summonerInfoContainer'}>

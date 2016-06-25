@@ -159,12 +159,19 @@ class HomeStore {
     this.championsArray = summonerData.summoner.championsS6;
     this.profileIconId = summonerData.profileIconId;
     this.apiSummonerName = summonerData.summoner.summonerName;
+    this.summonerName = '';
+    toastr.info(summonerData.message);
+
+    for(var i = 0; i < this.champions.length; i ++){
+      this.champions[i].activeChampion = false;
+    }
   }
 
   onSearchSummonerFail(errorMessage) {
     this.summonerNameValidationState = 'has-error';
     this.helpBlock = errorMessage;
     this.showChampions = true;
+    toastr.error(errorMessage);
   }
 
   onUpdateSummonerName(event) {
