@@ -177,26 +177,6 @@ server.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
 
-app.post('/searchForChampion', function(req, res, next) {
-  var championId = req.body.championId;
-
-  console.log('CONSOLE ID ' + championId);
-  console.log('Summoner? ' + Summoner.championsS6);
-
-  /*Summoner.findOne({ championId: championId }, function(err, champion) {
-    if (err) return next(err);
-
-    if (!champion) {
-      return res.status(404).send({ message: 'Character not found.' });
-    }
-    else{
-      res.status(200).send({ message: 'Character found!' });
-    }
-
-    //res.send(character);
-  });*/
-});
-
 /**
  * POST /searchSummoner
  * Searches for summoner in the Riot API

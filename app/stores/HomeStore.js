@@ -1,16 +1,13 @@
 import alt from '../alt';
 import HomeActions from '../actions/HomeActions';
-import ChampionStore from '../stores/ChampionStore';
 
 class HomeStore {
   constructor() {
     this.bindActions(HomeActions);
-    this.ChampionStore = ChampionStore.getState();
-    this.summonerName = '';
-    this.apiSummonerName = '';
+    this.summonerName;
+    this.apiSummonerName;
     this.region = 'na';
-    this.helpBlock = '';
-    this.summonerNameValidationState = '';
+    this.summonerNameValidationState;
     this.showChampions = true;
     this.championsArray;
     this.profileIconId = '666';
@@ -153,19 +150,16 @@ class HomeStore {
 
   onSearchSummonerSuccess(summonerData) {
     this.summonerNameValidationState = 'has-success';
-    this.helpBlock = summonerData.message;
     this.showChampions = false;
-    console.log(this.helpBlock);
-    console.log('SUMMONER DATAAAAAAAAAAAAAAA');
-    console.log(summonerData.summoner);
-    console.log(summonerData.summoner.championsS6);
-    console.log(summonerData.profileIconId);
     this.championsArray = summonerData.summoner.championsS6;
     this.profileIconId = summonerData.profileIconId;
     this.apiSummonerName = summonerData.summoner.summonerName;
+
+    //clearing summoner name text field on submit
     this.summonerName = '';
     toastr.info(summonerData.message);
 
+    //setting activeChampion flag to false when searching for more than one summoner
     for(var i = 0; i < this.champions.length; i ++){
       this.champions[i].activeChampion = false;
     }
@@ -173,7 +167,6 @@ class HomeStore {
 
   onSearchSummonerFail(errorMessage) {
     this.summonerNameValidationState = 'has-error';
-    this.helpBlock = errorMessage;
     this.showChampions = true;
     toastr.error(errorMessage);
   }
@@ -181,7 +174,6 @@ class HomeStore {
   onUpdateSummonerName(event) {
     this.summonerName = event.target.value;
     this.summonerNameValidationState = '';
-    this.helpBlock = '';
   }
 
   onUpdateRegion(event){
@@ -190,20 +182,13 @@ class HomeStore {
 
   onInvalidSummonerName() {
     this.summonerNameValidationState = 'has-error';
-    this.helpBlock = 'Please enter a character name.';
     toastr.error('please enter a summoner name');
   }
 
-  onSendChampionData(championData){
-    console.log('CHAMPION STORE');
-    console.log(this.ChampionStore);
-    console.log(championData.currentChampion);
-    this.ChampionStore.currentChampion = championData.currentChampion;
+  onSetSelectedChampionData(championData){
     this.currentChampion = championData.currentChampion;
+    //sets homeStore champion object to pull correct champion images from the API's
     this.champion = championData.champion;
-
-    console.log('CHAMPION HODOR HODOR HODOR');
-    console.log(this.champion);
   }
 }
 

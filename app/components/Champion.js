@@ -10,14 +10,13 @@ class Champion extends React.Component {
     this.onChange = this.onChange.bind(this);
     this.homeStore = HomeStore.getState();
 
-    console.log('HODOR HOME STORE');
+    console.log('CHAMPION HOME STORE');
     console.log(this.homeStore);
+
     this.currentChampion = this.homeStore.currentChampion;
     this.champion = this.homeStore.champion;
 
-    console.log('CURRENT CHAMPION ON CHAMPION PAGE');
-    console.log(this.currentChampion);
-
+    //Retrieving champion data for display on champion page
     this.championName = this.currentChampion.championName;
     this.championApiName = this.champion.championName;
 
@@ -55,37 +54,17 @@ class Champion extends React.Component {
 
     this.supportRankedGames = this.currentChampion.supportRankedGames;
     this.supportRankedCreepScore = (this.currentChampion.supportRankedMinionsKilled + this.currentChampion.supportRankedNeutralMinionsKilled) / this.currentChampion.supportRankedGames;
-
-    //console.log('CHAMPION PAGE');
-    //console.log(this.state);
   }
 
   componentDidMount() {
     ChampionStore.listen(this.onChange);
-    /*CharacterActions.getCharacter(this.props.params.id);
-
-    $('.magnific-popup').magnificPopup({
-      type: 'image',
-      mainClass: 'mfp-zoom-in',
-      closeOnContentClick: true,
-      midClick: true,
-      zoom: {
-        enabled: true,
-        duration: 300
-      }
-    });*/
   }
 
   componentWillUnmount() {
     ChampionStore.unlisten(this.onChange);
-    //$(document.body).removeClass();
   }
 
   componentDidUpdate() {
-    // Fetch new charachter data when URL path changes
-    /*if (prevProps.params.id !== this.props.params.id) {
-      CharacterActions.getCharacter(this.props.params.id);
-    }*/
   }
 
   onChange(state) {

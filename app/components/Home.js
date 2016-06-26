@@ -40,16 +40,9 @@ class Home extends React.Component {
     }
   }
 
-  searchForChampion(championId){
-    HomeActions.searchForChampion(championId);
-  }
-
-  //sets selected champion data into champion store
-  sendChampionData(champion) {
+  setSelectedChampionData(champion) {
     var championData ={};
-    console.log('CURRENT CHAMPION');
-    console.log(champion);
-    console.log(this.state.championsArray);
+    championData.champion = champion;
 
     for(var i = 0; i < this.state.championsArray.length; i ++){
       if(this.state.championsArray[i].championId == champion.championId){
@@ -58,12 +51,7 @@ class Home extends React.Component {
       }
     }
 
-    championData.champion = champion;
-
-    console.log('CURRENT CHAMP DATA');
-    console.log(championData);
-
-    HomeActions.sendChampionData(championData);
+    HomeActions.setSelectedChampionData(championData);
   }
 
   render() {
@@ -80,7 +68,7 @@ class Home extends React.Component {
           <div className="championPortraitContainer" key={champion.championId}>
             <div className={champion.activeChampion ? '' : 'championContentDisabled'}>
               <Link to={'/champion/' + champion.championId}>
-                <img onClick={this.sendChampionData.bind(this, champion)} className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/champion/' + champion.championName + '.png'} />
+                <img onClick={this.setSelectedChampionData.bind(this, champion)} className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/champion/' + champion.championName + '.png'} />
               </Link>
             </div>
           </div>

@@ -4,11 +4,6 @@ import NavbarActions from '../actions/NavbarActions';
 class NavbarStore {
   constructor() {
     this.bindActions(NavbarActions);
-    this.ajaxAnimationClass = '';
-  }
-
-  onUpdateAjaxAnimation(className) {
-    this.ajaxAnimationClass = className; //fadein or fadeout
   }
 }
 
