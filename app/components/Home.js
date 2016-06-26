@@ -44,6 +44,28 @@ class Home extends React.Component {
     HomeActions.searchForChampion(championId);
   }
 
+  //sets selected champion data into champion store
+  sendChampionData(champion) {
+    var championData ={};
+    console.log('CURRENT CHAMPION');
+    console.log(champion);
+    console.log(this.state.championsArray);
+
+    for(var i = 0; i < this.state.championsArray.length; i ++){
+      if(this.state.championsArray[i].championId == champion.championId){
+        championData.currentChampion = this.state.championsArray[i];
+        break;
+      }
+    }
+
+    championData.champion = champion;
+
+    console.log('CURRENT CHAMP DATA');
+    console.log(championData);
+
+    HomeActions.sendChampionData(championData);
+  }
+
   render() {
     let championGrid = this.state.champions.map((champion) => {
       if(!this.state.showChampions && this.state.championsArray){
@@ -58,7 +80,7 @@ class Home extends React.Component {
           <div className="championPortraitContainer" key={champion.championId}>
             <div className={champion.activeChampion ? '' : 'championContentDisabled'}>
               <Link to={'/champion/' + champion.championId}>
-                <img className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/champion/' + champion.championName + '.png'} />
+                <img onClick={this.sendChampionData.bind(this, champion)} className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/champion/' + champion.championName + '.png'} />
               </Link>
             </div>
           </div>
@@ -93,7 +115,7 @@ class Home extends React.Component {
           </form>
         </div>
         <div className={this.state.showChampions ? 'hidden' : 'summonerInfoContainer'}>
-          <img className="summonerInfoIcon" src={'http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/' + this.state.profileIconId + '.png'} />
+          <img className="summonerInfoIcon" src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/profileicon/' + this.state.profileIconId + '.png'} />
           <div className="summonerInfoName">{this.state.apiSummonerName}</div>
         </div>
         <div className='gridContainer'>

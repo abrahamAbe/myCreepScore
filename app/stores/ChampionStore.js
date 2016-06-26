@@ -14,6 +14,7 @@ class ChampionStore {
     this.losses = 0;
     this.winLossRatio = 0;
     this.isReported = false;
+    this.currentChampion = 'hodor';
 
     console.log('HODOR');
   }

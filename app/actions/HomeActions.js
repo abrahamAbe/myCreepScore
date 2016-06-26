@@ -9,7 +9,8 @@ class HomeActions {
       'searchForChampionFail',
       'updateSummonerName',
       'invalidSummonerName',
-      'updateRegion'
+      'updateRegion',
+      'sendChampionData'
     );
   }
 

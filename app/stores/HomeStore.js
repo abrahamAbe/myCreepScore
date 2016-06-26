@@ -1,9 +1,11 @@
 import alt from '../alt';
 import HomeActions from '../actions/HomeActions';
+import ChampionStore from '../stores/ChampionStore';
 
 class HomeStore {
   constructor() {
     this.bindActions(HomeActions);
+    this.ChampionStore = ChampionStore.getState();
     this.summonerName = '';
     this.apiSummonerName = '';
     this.region = 'na';
@@ -12,6 +14,8 @@ class HomeStore {
     this.showChampions = true;
     this.championsArray;
     this.profileIconId = '666';
+    this.currentChampion;
+    this.champion;
     this.champions = [
       { championId: 266, championName: 'Aatrox', title: 'The Darkin Bladee'},
       { championId: 103, championName: 'Ahri', title: 'The Nine-Tailed Fox'},
@@ -188,6 +192,18 @@ class HomeStore {
     this.summonerNameValidationState = 'has-error';
     this.helpBlock = 'Please enter a character name.';
     toastr.error('please enter a summoner name');
+  }
+
+  onSendChampionData(championData){
+    console.log('CHAMPION STORE');
+    console.log(this.ChampionStore);
+    console.log(championData.currentChampion);
+    this.ChampionStore.currentChampion = championData.currentChampion;
+    this.currentChampion = championData.currentChampion;
+    this.champion = championData.champion;
+
+    console.log('CHAMPION HODOR HODOR HODOR');
+    console.log(this.champion);
   }
 }
 
