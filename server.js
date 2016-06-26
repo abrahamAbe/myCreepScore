@@ -416,14 +416,16 @@ function createCsAverages(summoner, summonerExists, gamesArray){
       }
 
       //if champion doesn't exist in db, create new champion record and store it
-      if(!championExists){
+      if(!championExists && !championsArray[0].noScores){
         summoner.championsS6.push(championsArray[0]);
       }
       
     }
     else{
       console.log('CREATING');
-      summoner.championsS6.push(championsArray[0]);
+      if(!championsArray[0].noScores){
+        summoner.championsS6.push(championsArray[0]);
+      }
     }
 
     //TODO mov into it's own function
@@ -538,6 +540,9 @@ function calculateNormalCsAverages(currentChampion, currentGame){
       currentChampion.marksmanNormalTimePlayed += currentGame.stats.timePlayed;
     }
   }
+  else if(!currentGame.stats.playerPosition){
+    currentChampion.noScores = true;
+  }
   
   return currentChampion;
 }
@@ -640,6 +645,9 @@ function calculateRankedCsAverages(currentChampion, currentGame){
     if(currentGame.stats.timePlayed){
       currentChampion.marksmanRankedTimePlayed += currentGame.stats.timePlayed;
     }
+  }
+  else if(!currentGame.stats.playerPosition){
+    currentChampion.noScores = true;
   }
   
   return currentChampion;

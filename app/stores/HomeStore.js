@@ -5,7 +5,7 @@ class HomeStore {
   constructor() {
     this.bindActions(HomeActions);
     this.summonerName;
-    this.apiSummonerName;
+    this.apiSummonerName = 'noName';
     this.region = 'na';
     this.summonerNameValidationState;
     this.showChampions = true;
