@@ -110,7 +110,7 @@ class Champion extends React.Component {
       msTransition: 'all' // 'ms' is the only lowercase vendor prefix
     };
     return (
-      <div className='championMainContainer container'>
+      <div className={this.homeStore.apiSummonerName == 'noName' ? 'hidden' : 'championMainContainer container'}>
         {this.championName}
         <div style={divStyle} className="championImageContainer"></div>
         <div className="championStatsContainer">
