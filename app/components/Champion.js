@@ -1,7 +1,8 @@
 import React from 'react';
 import ChampionStore from '../stores/ChampionStore';
 import ChampionActions from '../actions/ChampionActions';
-import HomeStore from '../stores/HomeStore'
+import HomeStore from '../stores/HomeStore';
+import {Link} from 'react-router';
 
 class Champion extends React.Component {
   constructor(props) {
@@ -9,9 +10,6 @@ class Champion extends React.Component {
     this.state = ChampionStore.getState();
     this.onChange = this.onChange.bind(this);
     this.homeStore = HomeStore.getState();
-
-    console.log('HODOR HOME STORE');
-    console.log(this.homeStore);
 
     this.championName = '';
     this.championApiName = '';
@@ -44,11 +42,13 @@ class Champion extends React.Component {
 
       //Retrieving champion data for display on champion page
       this.championName = this.currentChampion.championName;
+      this.championTitle = this.champion.title;
       this.championApiName = this.champion.championName;
 
       //Normal games scores
       this.topNormalGames = this.currentChampion.topNormalGames;
       this.topNormalCreepScore = (this.currentChampion.topNormalMinionsKilled + this.currentChampion.topNormalNeutralMinionsKilled) / this.currentChampion.topNormalGames;
+
       if(!this.topNormalCreepScore){
         this.topNormalCreepScore = 0;
       }
@@ -56,39 +56,75 @@ class Champion extends React.Component {
       this.midNormalGames = this.currentChampion.midNormalGames;
       this.midNormalCreepScore = (this.currentChampion.midNormalMinionsKilled + this.currentChampion.midNormalNeutralMinionsKilled) / this.currentChampion.midNormalGames;
 
+      if(!this.midNormalCreepScore){
+        this.midNormalCreepScore = 0;
+      }
+
       this.jungleNormalGames = this.currentChampion.jungleNormalGames;
       this.jungleNormalCreepScore = (this.currentChampion.jungleNormalMinionsKilled + this.currentChampion.jungleNormalNeutralMinionsKilled) / this.currentChampion.jungleNormalGames;
+
+      if(!this.jungleNormalCreepScore){
+        this.jungleNormalCreepScore = 0;
+      }
 
       this.marksmanNormalGames = this.currentChampion.marksmanNormalGames;
       this.marksmanNormalCreepScore = (this.currentChampion.marksmanNormalMinionsKilled + this.currentChampion.marksmanNormalNeutralMinionsKilled) / this.currentChampion.marksmanNormalGames;
 
+      if(!this.marksmanNormalCreepScore){
+        this.marksmanNormalCreepScore = 0;
+      }
+
       this.supportNormalGames = this.currentChampion.supportNormalGames;
       this.supportNormalCreepScore = (this.currentChampion.supportNormalMinionsKilled + this.currentChampion.supportNormalNeutralMinionsKilled) / this.currentChampion.supportNormalGames;
+
+      if(!this.supportNormalCreepScore){
+        this.supportNormalCreepScore = 0;
+      }
 
       //Ranked games scores
       this.topRankedGames = this.currentChampion.topRankedGames;
       this.topRankedCreepScore = (this.currentChampion.topRankedMinionsKilled + this.currentChampion.topRankedNeutralMinionsKilled) / this.currentChampion.topRankedGames;
 
+      if(!this.topRankedCreepScore){
+        this.topRankedCreepScore = 0;
+      }
+
       this.midRankedGames = this.currentChampion.midRankedGames;
       this.midRankedCreepScore = (this.currentChampion.midRankedMinionsKilled + this.currentChampion.midRankedNeutralMinionsKilled) / this.currentChampion.midRankedGames;
+
+      if(!this.midRankedCreepScore){
+        this.midRankedCreepScore = 0;
+      }
 
       this.jungleRankedGames = this.currentChampion.jungleRankedGames;
       this.jungleRankedCreepScore = (this.currentChampion.jungleRankedMinionsKilled + this.currentChampion.jungleRankedNeutralMinionsKilled) / this.currentChampion.jungleRankedGames;
 
+      if(!this.jungleRankedCreepScore){
+        this.jungleRankedCreepScore = 0;
+      }
+
       this.marksmanRankedGames = this.currentChampion.marksmanRankedGames;
       this.marksmanRankedCreepScore = (this.currentChampion.marksmanRankedMinionsKilled + this.currentChampion.marksmanRankedNeutralMinionsKilled) / this.currentChampion.marksmanRankedGames;
 
+      if(!this.marksmanRankedCreepScore){
+        this.marksmanRankedCreepScore = 0;
+      }
+
       this.supportRankedGames = this.currentChampion.supportRankedGames;
       this.supportRankedCreepScore = (this.currentChampion.supportRankedMinionsKilled + this.currentChampion.supportRankedNeutralMinionsKilled) / this.currentChampion.supportRankedGames;
+
+      if(!this.supportRankedCreepScore){
+        this.supportRankedCreepScore = 0;
+      }
     }
-    
   }
 
   componentDidMount() {
-    if(!this.homeStore.champion){
-      window.location.href = 'http://mycreepscore.herokuapp.com/';
-    }
     ChampionStore.listen(this.onChange);
+    if(!this.homeStore.champion){
+      //window.location.href = 'http://mycreepscore.herokuapp.com/';
+      window.location.href = 'http://localhost:3000/';
+    }
   }
 
   componentWillUnmount() {
@@ -103,16 +139,16 @@ class Champion extends React.Component {
   }
 
   render() {
-    var divStyle = {
-      color: 'white',
+    var championImageContainerStyle = {
       backgroundImage: 'url(' + 'http://ddragon.leagueoflegends.com/cdn/img/champion/splash/' + this.championApiName + '_0.jpg' + ')',
-      WebkitTransition: 'all', // note the capital 'W' here
-      msTransition: 'all' // 'ms' is the only lowercase vendor prefix
+      WebkitTransition: 'all',
+      msTransition: 'all'
     };
     return (
       <div className={this.homeStore.apiSummonerName == 'noName' ? 'hidden' : 'championMainContainer container'}>
-        {this.championName}
-        <div style={divStyle} className="championImageContainer"></div>
+        <div style={championImageContainerStyle} className="championImageContainer"></div>
+        <div className="championName">{this.championName}</div>
+        <div className="championTitle">{this.championTitle}</div>
         <div className="championStatsContainer">
           <div className="normalChampionStats statsContent">
             <div className="statsContentTitle">Normal (Summoner's Rift)</div>
@@ -120,29 +156,29 @@ class Champion extends React.Component {
               <div className="statsContentScores">
                 <div>Top lane</div>
                 <div>Games: {this.topNormalGames}</div>
-                <div>Creep score: {this.topNormalCreepScore}</div>
+                <div>Creep score: {this.topNormalCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
                 <div>Mid lane</div>
                 <div>Games: {this.midNormalGames}</div>
-                <div>Creep score: {this.midNormalCreepScore}</div>
+                <div>Creep score: {this.midNormalCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
                 <div>Jungle</div>
                 <div>Games: {this.jungleNormalGames}</div>
-                <div>Creep score: {this.jungleNormalCreepScore}</div>
+                <div>Creep score: {this.jungleNormalCreepScore.toFixed(0)}</div>
               </div>
             </div>
             <div className="bottomSectionScores">
               <div className="statsContentScores">
                 <div>Marksman</div>
                 <div>Games: {this.marksmanNormalGames}</div>
-                <div>Creep score: {this.marksmanNormalCreepScore}</div>
+                <div>Creep score: {this.marksmanNormalCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
                 <div>Support</div>
                 <div>Games: {this.supportNormalGames}</div>
-                <div>Creep score: {this.supportNormalCreepScore}</div>
+                <div>Creep score: {this.supportNormalCreepScore.toFixed(0)}</div>
               </div>
             </div>
           </div>
@@ -152,32 +188,35 @@ class Champion extends React.Component {
               <div className="statsContentScores">
                 <div>Top lane</div>
                 <div>Games: {this.topRankedGames}</div>
-                <div>Creep score: {this.topRankedCreepScore}</div>
+                <div>Creep score: {this.topRankedCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
                 <div>Mid lane</div>
                 <div>Games: {this.midRankedGames}</div>
-                <div>Creep score: {this.midRankedCreepScore}</div>
+                <div>Creep score: {this.midRankedCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
                 <div>Jungle</div>
                 <div>Games: {this.jungleRankedGames}</div>
-                <div>Creep score: {this.jungleRankedCreepScore}</div>
+                <div>Creep score: {this.jungleRankedCreepScore.toFixed(0)}</div>
               </div>
             </div>
             <div className="bottomSectionScores">
               <div className="statsContentScores">
                 <div>Marksman</div>
                 <div>Games: {this.marksmanRankedGames}</div>
-                <div>Creep score: {this.marksmanRankedCreepScore.toFixed(1)}</div>
+                <div>Creep score: {this.marksmanRankedCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
                 <div>Support</div>
                 <div>Games: {this.supportRankedGames}</div>
-                <div>Creep score: {this.supportRankedCreepScore}</div>
+                <div>Creep score: {this.supportRankedCreepScore.toFixed(0)}</div>
               </div>
             </div>
           </div>
+        </div>
+        <div className="backButton">
+          <Link to={'/'}>Back To Home Page</Link>
         </div>
       </div>
     );

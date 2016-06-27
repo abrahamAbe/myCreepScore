@@ -153,6 +153,9 @@ var championsData = {
     "143" :  { championId: 143, championName: 'Zyra', title: 'Rise of the Thorns'},
     };
 
+var APIKey = '97a53c56-dec1-4545-9f56-f2a650cb098a';
+var APISlug = 'https://na.api.pvp.net/api/lol/';
+
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
@@ -191,7 +194,7 @@ app.post('/searchSummoner', function(req, res, next) {
 
   //Riot API Request
   //TODO move API key and urls to global variables and replace hardcoded region with dinamic region
-  summonerRequest = 'https://na.api.pvp.net/api/lol/' + region + '/v1.4/summoner/by-name/' + summonerName + '?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
+  summonerRequest = APISlug + region + '/v1.4/summoner/by-name/' + summonerName + '?api_key=' + APIKey;
   async.waterfall([
     function(callback) {
       request.get(summonerRequest, function (error, response, body) {
@@ -209,7 +212,6 @@ app.post('/searchSummoner', function(req, res, next) {
           //looking for summoner in DB
           Summoner.findOne({ summonerId: summonerId }, function(err, summoner) {
             if(summoner){
-              console.log('SUMMONER IN DB');
               var summonerData = {
                 summoner: summoner,
                 summonerId: summonerId,
@@ -219,7 +221,6 @@ app.post('/searchSummoner', function(req, res, next) {
               callback(error, summonerData);
             }
             else{
-              console.log('SUMMONER NOT IN DB');
               var summonerData = {
                 summonerId: summonerId,
                 profileIconId: profileIconId
@@ -231,7 +232,7 @@ app.post('/searchSummoner', function(req, res, next) {
 
         else{
           //if summoner request fails
-          return res.status(400).send({ message: 'Whoa, there was an error. Pleas try again.' });
+          return res.status(400).send({ message: 'Please check your region and summoner name.' });
         }
 
       });
@@ -244,19 +245,14 @@ app.post('/searchSummoner', function(req, res, next) {
       if(summonerData.summonerExists){
         summonerId = summonerData.summonerId;
         summonerExists = true;
-        console.log('SUMMONER EXISTS');
       }
 
       else{
         summonerId = summonerData.summonerId;
-        console.log('SUMMONER DOESNT EXIST');
       }
 
       //TODO move API key and urls to global variables and replace hardcoded region with dinamic region
-      gamesRequest = 'https://na.api.pvp.net/api/lol/na/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=159a2c64-74bc-4421-bc98-3278e73922de';
-
-      console.log('GAMES REQUEST');
-      console.log(gamesRequest);
+      gamesRequest = APISlug + region + '/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=' + APIKey;
 
       request.get(gamesRequest, function (error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -270,13 +266,10 @@ app.post('/searchSummoner', function(req, res, next) {
 
               //filtering games
               gamesArray = filterGames(gamesArray, gamesResponseArray);
-
-              console.log(gamesArray);
           
           //if summoner exists in DB
           if(summonerExists && gamesArray.length){
 
-            console.log('updating existing summoner:');
             summoner = summonerData.summoner;
             currentLastGameId = gamesArray[0].gameId;
 
@@ -284,9 +277,6 @@ app.post('/searchSummoner', function(req, res, next) {
 
             //Do magic with filtered new games
             if(newSummonerGamesArray.length){
-              console.log('FILTERED NEW GAMES');
-              console.log(newSummonerGamesArray);
-              console.log('currentLastGameId: ' + currentLastGameId);
               
               summoner = createCsAverages(summoner, summonerExists, newSummonerGamesArray);
 
@@ -295,19 +285,17 @@ app.post('/searchSummoner', function(req, res, next) {
 
               summoner.save(function(err) {
                 if (err) return next(err);
-                res.send({ message: ApiSummonerName + ' has been updated successfully!', profileIconId: summonerData.profileIconId });
+                res.send({ message: 'Your new games have been added!', profileIconId: summonerData.profileIconId });
               });
             }
 
             else{
-              return res.status(200).send({ message: 'No new games', summoner: summoner , profileIconId: summonerData.profileIconId});
+              return res.status(200).send({ message: 'You have no new games, please play more normal or ranked games on Summoner\'s rift!', summoner: summoner , profileIconId: summonerData.profileIconId});
             }
 
           }
           //if summoner doesn't exist in DB
           else if(!summonerExists && gamesArray.length){
-            console.log('creating new summoner');
-            console.log(gamesArray[0].gameId);
 
               summoner = new Summoner({
               summonerId: summonerId,
@@ -320,13 +308,13 @@ app.post('/searchSummoner', function(req, res, next) {
 
             summoner.save(function(err) {
               if (err) return next(err);
-              res.send({ message: ApiSummonerName + ' has been added successfully!', summoner: summoner, profileIconId: summonerData.profileIconId });
+              res.send({ message: 'Hello ' + ApiSummonerName + ', welcome to my creep score!', summoner: summoner, profileIconId: summonerData.profileIconId });
             });
           }
         }
 
         else{
-          return res.status(400).send({ message: 'No Data Was Found' });
+          return res.status(400).send({ message: 'Teemo we have a problem, please try again!' });
         }
 
       });
@@ -395,13 +383,6 @@ function createCsAverages(summoner, summonerExists, gamesArray){
 
     //check if champion exists (passing in summoner exists flag), if it exists pull it out and add averages, if not just add him
     if(summonerExists){
-      console.log('UPDATING');
-      //console.log(championsArray[0]);
-      console.log(summoner);
-      //summoner.summonerName = 'Hodor';
-      console.log('RECORD: ' );
-      console.log(summoner.championsS6[0]);
-      //summoner.championsS6[0].championName = 'Ive been updated!';
 
       for(var i = 0; i < summoner.championsS6.length; i ++){
         //if champion alredy in db, pull it out and add new averages
@@ -422,7 +403,6 @@ function createCsAverages(summoner, summonerExists, gamesArray){
       
     }
     else{
-      console.log('CREATING');
       if(!championsArray[0].noScores){
         summoner.championsS6.push(championsArray[0]);
       }
@@ -442,10 +422,8 @@ function createCsAverages(summoner, summonerExists, gamesArray){
 
 //TODO call match api and pull accurate player position and add player roles for adc position
 function calculateNormalCsAverages(currentChampion, currentGame){
-  console.log('calculating AVERAGE');
 
   if(currentGame.stats.playerPosition == '1'){
-    console.log('TOP LANE');
     currentChampion.topNormalGames += 1;
 
     if(currentGame.stats.minionsKilled){
@@ -465,7 +443,6 @@ function calculateNormalCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerPosition == '2'){
-    console.log('MID LANE');
     currentChampion.midNormalGames += 1;
     if(currentGame.stats.minionsKilled){
       currentChampion.midNormalMinionsKilled += currentGame.stats.minionsKilled;
@@ -484,7 +461,6 @@ function calculateNormalCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerPosition == '3'){
-    console.log('JUNGLE');
     currentChampion.jungleNormalGames += 1;
     if(currentGame.stats.minionsKilled){
       currentChampion.jungleNormalMinionsKilled += currentGame.stats.minionsKilled;
@@ -503,7 +479,6 @@ function calculateNormalCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerRole == '2' && currentGame.stats.playerPosition == '4'){
-    console.log('SUPPORT');
     currentChampion.supportNormalGames += 1;
     if(currentGame.stats.minionsKilled){
       currentChampion.supportNormalMinionsKilled += currentGame.stats.minionsKilled;
@@ -522,7 +497,6 @@ function calculateNormalCsAverages(currentChampion, currentGame){
     }
   }
   else if((currentGame.stats.playerRole == '1' || currentGame.stats.playerRole == '3' || currentGame.stats.playerRole == '4') && currentGame.stats.playerPosition == '4'){
-    console.log('MARKSMAN');
     currentChampion.marksmanNormalGames += 1;
     if(currentGame.stats.minionsKilled){
       currentChampion.marksmanNormalMinionsKilled += currentGame.stats.minionsKilled;
@@ -548,11 +522,8 @@ function calculateNormalCsAverages(currentChampion, currentGame){
 }
 //TODO call match api and pull accurate player position and add player roles for adc position
 function calculateRankedCsAverages(currentChampion, currentGame){
-  console.log('calculating AVERAGE');
-  console.log(currentGame.gameId);
 
   if(currentGame.stats.playerPosition == '1'){
-    console.log('TOP LANE');
     currentChampion.topRankedGames += 1;
     if(currentGame.stats.minionsKilled){
       currentChampion.topRankedMinionsKilled += currentGame.stats.minionsKilled;
@@ -571,7 +542,6 @@ function calculateRankedCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerPosition == '2'){
-    console.log('MID LANE');
     currentChampion.midRankedGames += 1;
     if(currentGame.stats.minionsKilled){
       currentChampion.midRankedMinionsKilled += currentGame.stats.minionsKilled;
@@ -590,7 +560,6 @@ function calculateRankedCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerPosition == '3'){
-    console.log('JUNGLE');
     currentChampion.jungleRankedGames += 1;
     if(currentGame.stats.minionsKilled){
       currentChampion.jungleRankedMinionsKilled += currentGame.stats.minionsKilled;
@@ -609,7 +578,6 @@ function calculateRankedCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerRole == '2' && currentGame.stats.playerPosition == '4'){
-    console.log('SUPPORT');
     currentChampion.supportRankedGames += 1;
     if(currentGame.stats.minionsKilled){
       currentChampion.supportRankedMinionsKilled += currentGame.stats.minionsKilled;
@@ -628,7 +596,6 @@ function calculateRankedCsAverages(currentChampion, currentGame){
     }
   }
   else if((currentGame.stats.playerRole == '1' || currentGame.stats.playerRole == '3' || currentGame.stats.playerRole == '4') && currentGame.stats.playerPosition == '4'){
-    console.log('MARKSMAN');
     currentChampion.marksmanRankedGames += 1;
     if(currentGame.stats.minionsKilled){
       currentChampion.marksmanRankedMinionsKilled += currentGame.stats.minionsKilled;

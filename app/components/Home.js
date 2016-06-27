@@ -8,9 +8,6 @@ class Home extends React.Component {
     super(props);
     this.state = HomeStore.getState();
     this.onChange = this.onChange.bind(this);
-
-    console.log('HOME STORE AT MAIN PAGE');
-    console.log(this.state);
   }
 
   componentDidMount() {
@@ -28,15 +25,20 @@ class Home extends React.Component {
   searchSummoner(event) {
     event.preventDefault();
 
-    var summonerName = this.state.summonerName.trim(),
+    if(this.state.summonerName){
+      var summonerName = this.state.summonerName.trim(),
         region = this.state.region;
 
-    if (!summonerName) {
-      HomeActions.invalidSummonerName();
-    }
+      if (!summonerName) {
+        HomeActions.invalidSummonerName();
+      }
 
-    if (summonerName && region) {
-      HomeActions.searchSummoner(summonerName, region);
+      if (summonerName && region) {
+        HomeActions.searchSummoner(summonerName, region);
+      }
+    }
+    else{
+      toastr.error('Please enter a summoner name.');
     }
   }
 

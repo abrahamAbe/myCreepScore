@@ -182,7 +182,7 @@ class HomeStore {
 
   onInvalidSummonerName() {
     this.summonerNameValidationState = 'has-error';
-    toastr.error('please enter a summoner name');
+    toastr.error('Please enter a summoner name.');
   }
 
   onSetSelectedChampionData(championData){
