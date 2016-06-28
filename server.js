@@ -285,7 +285,7 @@ app.post('/searchSummoner', function(req, res, next) {
 
               summoner.save(function(err) {
                 if (err) return next(err);
-                res.send({ message: 'Your new games have been added!', profileIconId: summonerData.profileIconId });
+                res.send({ message: 'Your new games have been added!', summoner: summoner, profileIconId: summonerData.profileIconId });
               });
             }
 
@@ -414,10 +414,10 @@ function createCsAverages(summoner, summonerExists, gamesArray){
 
     //TODO mov into it's own function
     championsArray = [];
-    
-    currentChampion = resetCurrentChampion(currentChampion);
 
     championExists = false;
+
+    currentChampion = {};
 
   } while(gamesArray.length);
 
@@ -428,6 +428,10 @@ function createCsAverages(summoner, summonerExists, gamesArray){
 function calculateNormalCsAverages(currentChampion, currentGame){
 
   if(currentGame.stats.playerPosition == '1'){
+
+    if(!currentChampion.topNormalGames){
+      currentChampion = createTopNormalFields(currentChampion);
+    }
     currentChampion.topNormalGames += 1;
 
     if(currentGame.stats.minionsKilled){
@@ -447,7 +451,12 @@ function calculateNormalCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerPosition == '2'){
+
+    if(!currentChampion.midNormalGames){
+      currentChampion = createMidNormalFields(currentChampion);
+    }
     currentChampion.midNormalGames += 1;
+
     if(currentGame.stats.minionsKilled){
       currentChampion.midNormalMinionsKilled += currentGame.stats.minionsKilled;
     }
@@ -465,7 +474,12 @@ function calculateNormalCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerPosition == '3'){
+
+    if(!currentChampion.jungleNormalGames){
+      currentChampion = createJungleNormalFields(currentChampion);
+    }
     currentChampion.jungleNormalGames += 1;
+
     if(currentGame.stats.minionsKilled){
       currentChampion.jungleNormalMinionsKilled += currentGame.stats.minionsKilled;
     }
@@ -483,7 +497,12 @@ function calculateNormalCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerRole == '2' && currentGame.stats.playerPosition == '4'){
+
+    if(!currentChampion.supportNormalGames){
+      currentChampion = createSupportNormalFields(currentChampion);
+    }
     currentChampion.supportNormalGames += 1;
+
     if(currentGame.stats.minionsKilled){
       currentChampion.supportNormalMinionsKilled += currentGame.stats.minionsKilled;
     }
@@ -501,7 +520,12 @@ function calculateNormalCsAverages(currentChampion, currentGame){
     }
   }
   else if((currentGame.stats.playerRole == '1' || currentGame.stats.playerRole == '3' || currentGame.stats.playerRole == '4') && currentGame.stats.playerPosition == '4'){
+
+    if(!currentChampion.marksmanNormalGames){
+      currentChampion = createMarksmanNormalFields(currentChampion);
+    }
     currentChampion.marksmanNormalGames += 1;
+
     if(currentGame.stats.minionsKilled){
       currentChampion.marksmanNormalMinionsKilled += currentGame.stats.minionsKilled;
     }
@@ -528,7 +552,12 @@ function calculateNormalCsAverages(currentChampion, currentGame){
 function calculateRankedCsAverages(currentChampion, currentGame){
 
   if(currentGame.stats.playerPosition == '1'){
+
+    if(!currentChampion.topRankedGames){
+      currentChampion = createTopRankedFields(currentChampion);
+    }
     currentChampion.topRankedGames += 1;
+
     if(currentGame.stats.minionsKilled){
       currentChampion.topRankedMinionsKilled += currentGame.stats.minionsKilled;
     }
@@ -546,7 +575,12 @@ function calculateRankedCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerPosition == '2'){
+
+    if(!currentChampion.midRankedGames){
+      currentChampion = createMidRankedFields(currentChampion);
+    }
     currentChampion.midRankedGames += 1;
+
     if(currentGame.stats.minionsKilled){
       currentChampion.midRankedMinionsKilled += currentGame.stats.minionsKilled;
     }
@@ -564,7 +598,12 @@ function calculateRankedCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerPosition == '3'){
+
+    if(!currentChampion.jungleRankedGames){
+      currentChampion = createJungleRankedFields(currentChampion);
+    }
     currentChampion.jungleRankedGames += 1;
+
     if(currentGame.stats.minionsKilled){
       currentChampion.jungleRankedMinionsKilled += currentGame.stats.minionsKilled;
     }
@@ -582,7 +621,12 @@ function calculateRankedCsAverages(currentChampion, currentGame){
     }
   }
   else if(currentGame.stats.playerRole == '2' && currentGame.stats.playerPosition == '4'){
+
+    if(!currentChampion.supportRankedGames){
+      currentChampion = createSupportRankedFields(currentChampion);
+    }
     currentChampion.supportRankedGames += 1;
+
     if(currentGame.stats.minionsKilled){
       currentChampion.supportRankedMinionsKilled += currentGame.stats.minionsKilled;
     }
@@ -600,7 +644,12 @@ function calculateRankedCsAverages(currentChampion, currentGame){
     }
   }
   else if((currentGame.stats.playerRole == '1' || currentGame.stats.playerRole == '3' || currentGame.stats.playerRole == '4') && currentGame.stats.playerPosition == '4'){
+
+    if(currentChampion.marksmanRankedGames){
+      currentChampion = createMarksmanRankedFields(currentChampion);
+    }
     currentChampion.marksmanRankedGames += 1;
+
     if(currentGame.stats.minionsKilled){
       currentChampion.marksmanRankedMinionsKilled += currentGame.stats.minionsKilled;
     }
@@ -637,156 +686,370 @@ function addRemainingGames(championsArray, gamesArray, remainingGamesArray){
   return remainingGamesArray;
 }
 
+//Normals
+function createTopNormalFields(currentChampion){
+  currentChampion.topNormalGames = 0;
+  currentChampion.topNormalMinionsKilled = 0;
+  currentChampion.topNormalNeutralMinionsKilled = 0;
+  currentChampion.topNormalNeutralMinionsKilledYourJungle = 0;
+  currentChampion.topNormalNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.topNormalTimePlayed = 0;
+
+  return currentChampion;
+}
+
+function createMidNormalFields(currentChampion){
+  currentChampion.midNormalGames = 0;
+  currentChampion.midNormalMinionsKilled = 0;
+  currentChampion.midNormalNeutralMinionsKilled = 0;
+  currentChampion.midNormalNeutralMinionsKilledYourJungle = 0;
+  currentChampion.midNormalNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.midNormalTimePlayed = 0;
+
+  return currentChampion; 
+}
+
+function createJungleNormalFields(currentChampion){
+  currentChampion.jungleNormalGames = 0;
+  currentChampion.jungleNormalMinionsKilled = 0;
+  currentChampion.jungleNormalNeutralMinionsKilled = 0;
+  currentChampion.jungleNormalNeutralMinionsKilledYourJungle = 0;
+  currentChampion.jungleNormalNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.jungleNormalTimePlayed = 0;
+
+  return currentChampion; 
+}
+
+function createMarksmanNormalFields(currentChampion){
+  currentChampion.marksmanNormalGames = 0;
+  currentChampion.marksmanNormalMinionsKilled = 0;
+  currentChampion.marksmanNormalNeutralMinionsKilled = 0;
+  currentChampion.marksmanNormalNeutralMinionsKilledYourJungle = 0;
+  currentChampion.marksmanNormalNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.marksmanNormalTimePlayed = 0;
+
+  return currentChampion; 
+}
+
+function createSupportNormalFields(currentChampion){
+  currentChampion.supportNormalGames = 0;
+  currentChampion.supportNormalMinionsKilled = 0;
+  currentChampion.supportNormalNeutralMinionsKilled = 0;
+  currentChampion.supportNormalNeutralMinionsKilledYourJungle = 0;
+  currentChampion.supportNormalNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.supportNormalTimePlayed = 0;
+
+  return currentChampion; 
+}
+
+//Ranked
+function createTopRankedFields(currentChampion){
+  currentChampion.topRankedGames = 0;
+  currentChampion.topRankedMinionsKilled = 0;
+  currentChampion.topRankedNeutralMinionsKilled = 0;
+  currentChampion.topRankedNeutralMinionsKilledYourJungle = 0;
+  currentChampion.topRankedNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.topRankedTimePlayed = 0;
+
+  return currentChampion;
+}
+
+function createMidRankedFields(currentChampion){
+  currentChampion.midRankedGames = 0;
+  currentChampion.midRankedMinionsKilled = 0;
+  currentChampion.midRankedNeutralMinionsKilled = 0;
+  currentChampion.midRankedNeutralMinionsKilledYourJungle = 0;
+  currentChampion.midRankedNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.midRankedTimePlayed = 0;
+
+  return currentChampion; 
+}
+
+function createJungleRankedFields(currentChampion){
+  currentChampion.jungleRankedGames = 0;
+  currentChampion.jungleRankedMinionsKilled = 0;
+  currentChampion.jungleRankedNeutralMinionsKilled = 0;
+  currentChampion.jungleRankedNeutralMinionsKilledYourJungle = 0;
+  currentChampion.jungleRankedNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.jungleRankedTimePlayed = 0;
+
+  return currentChampion; 
+}
+
+function createMarksmanRankedFields(currentChampion){
+  currentChampion.marksmanRankedGames = 0;
+  currentChampion.marksmanRankedMinionsKilled = 0;
+  currentChampion.marksmanRankedNeutralMinionsKilled = 0;
+  currentChampion.marksmanRankedNeutralMinionsKilledYourJungle = 0;
+  currentChampion.marksmanRankedNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.marksmanRankedTimePlayed = 0;
+
+  return currentChampion; 
+}
+
+function createSupportRankedFields(currentChampion){
+  currentChampion.supportRankedGames = 0;
+  currentChampion.supportRankedMinionsKilled = 0;
+  currentChampion.supportRankedNeutralMinionsKilled = 0;
+  currentChampion.supportRankedNeutralMinionsKilledYourJungle = 0;
+  currentChampion.supportRankedNeutralMinionsKilledEnemyJungle = 0;
+  currentChampion.supportRankedTimePlayed = 0;
+
+  return currentChampion; 
+}
+
 function createChampionModel(){
   var currentChampion = {
         championName: '',
         championId: 0,
-
-        topNormalGames: 0,
-        topNormalMinionsKilled: 0,
-        topNormalNeutralMinionsKilled: 0,
-        topNormalNeutralMinionsKilledYourJungle: 0,
-        topNormalNeutralMinionsKilledEnemyJungle: 0,
-        topNormalTimePlayed: 0,
-
-        midNormalGames: 0,
-        midNormalMinionsKilled: 0,
-        midNormalNeutralMinionsKilled: 0,
-        midNormalNeutralMinionsKilledYourJungle: 0,
-        midNormalNeutralMinionsKilledEnemyJungle: 0,
-        midNormalTimePlayed: 0,
-
-        jungleNormalGames: 0,
-        jungleNormalMinionsKilled: 0,
-        jungleNormalNeutralMinionsKilled: 0,
-        jungleNormalNeutralMinionsKilledYourJungle: 0,
-        jungleNormalNeutralMinionsKilledEnemyJungle: 0,
-        jungleNormalTimePlayed: 0,
-
-        marksmanNormalGames: 0,
-        marksmanNormalMinionsKilled: 0,
-        marksmanNormalNeutralMinionsKilled: 0,
-        marksmanNormalNeutralMinionsKilledYourJungle: 0,
-        marksmanNormalNeutralMinionsKilledEnemyJungle: 0,
-        marksmanNormalTimePlayed: 0,
-
-        supportNormalGames: 0,
-        supportNormalMinionsKilled: 0,
-        supportNormalNeutralMinionsKilled: 0,
-        supportNormalNeutralMinionsKilledYourJungle: 0,
-        supportNormalNeutralMinionsKilledEnemyJungle: 0,
-        supportNormalTimePlayed: 0,
-
-        topRankedGames: 0,
-        topRankedMinionsKilled: 0,
-        topRankedNeutralMinionsKilled: 0,
-        topRankedNeutralMinionsKilledYourJungle: 0,
-        topRankedNeutralMinionsKilledEnemyJungle: 0,
-        topRankedTimePlayed: 0,
-
-        midRankedGames: 0,
-        midRankedMinionsKilled: 0,
-        midRankedNeutralMinionsKilled: 0,
-        midRankedNeutralMinionsKilledYourJungle: 0,
-        midRankedNeutralMinionsKilledEnemyJungle: 0,
-        midRankedTimePlayed: 0,
-
-        jungleRankedGames: 0,
-        jungleRankedMinionsKilled: 0,
-        jungleRankedNeutralMinionsKilled: 0,
-        jungleRankedNeutralMinionsKilledYourJungle: 0,
-        jungleRankedNeutralMinionsKilledEnemyJungle: 0,
-        jungleRankedTimePlayed: 0,
-
-        marksmanRankedGames: 0,
-        marksmanRankedMinionsKilled: 0,
-        marksmanRankedNeutralMinionsKilled: 0,
-        marksmanRankedNeutralMinionsKilledYourJungle: 0,
-        marksmanRankedNeutralMinionsKilledEnemyJungle: 0,
-        marksmanRankedTimePlayed: 0,
-
-        supportRankedGames: 0,
-        supportRankedMinionsKilled: 0,
-        supportRankedNeutralMinionsKilled: 0,
-        supportRankedNeutralMinionsKilledYourJungle: 0,
-        supportRankedNeutralMinionsKilledEnemyJungle: 0,
-        supportRankedTimePlayed: 0
       };
 
   return currentChampion;
 }
 
 function updateChampion(dbChampion, championsArray){
+  console.log('CHAM,PIONS ARRAY');
+  console.log(championsArray[0]);
 
-  dbChampion.topNormalGames += championsArray[0].topNormalGames;
-  dbChampion.topNormalMinionsKilled += championsArray[0].topNormalMinionsKilled;
-  dbChampion.topNormalNeutralMinionsKilled += championsArray[0].topNormalNeutralMinionsKilled;
-  dbChampion.topNormalNeutralMinionsKilledYourJungle += championsArray[0].topNormalNeutralMinionsKilledYourJungle;
-  dbChampion.topNormalNeutralMinionsKilledEnemyJungle += championsArray[0].topNormalNeutralMinionsKilledEnemyJungle;
-  dbChampion.topNormalTimePlayed += championsArray[0].topNormalTimePlayed;
+  if(championsArray[0].topNormalGames > 0){
+    if(!dbChampion.topNormalGames && championsArray[0].topNormalGames > 0){
+      dbChampion = createTopNormalFields(dbChampion);
+    }
+    if(championsArray[0].topNormalGames){
+      dbChampion.topNormalGames += championsArray[0].topNormalGames;
+    }
+    if(championsArray[0].topNormalMinionsKilled){
+      dbChampion.topNormalMinionsKilled += championsArray[0].topNormalMinionsKilled;
+    }
+    if(championsArray[0].topNormalNeutralMinionsKilled){
+      dbChampion.topNormalNeutralMinionsKilled += championsArray[0].topNormalNeutralMinionsKilled; 
+    }
+    if(championsArray[0].topNormalNeutralMinionsKilledYourJungle){
+      dbChampion.topNormalNeutralMinionsKilledYourJungle += championsArray[0].topNormalNeutralMinionsKilledYourJungle;
+    }
+    if(championsArray[0].topNormalNeutralMinionsKilledEnemyJungle){
+      dbChampion.topNormalNeutralMinionsKilledEnemyJungle += championsArray[0].topNormalNeutralMinionsKilledEnemyJungle;
+    }
+    if(championsArray[0].topNormalTimePlayed){
+      dbChampion.topNormalTimePlayed += championsArray[0].topNormalTimePlayed;
+    }
+  }
 
-  dbChampion.midNormalGames += championsArray[0].midNormalGames;
-  dbChampion.midNormalMinionsKilled += championsArray[0].midNormalMinionsKilled;
-  dbChampion.midNormalNeutralMinionsKilled += championsArray[0].midNormalNeutralMinionsKilled;
-  dbChampion.midNormalNeutralMinionsKilledYourJungle += championsArray[0].midNormalNeutralMinionsKilledYourJungle;
-  dbChampion.midNormalNeutralMinionsKilledEnemyJungle += championsArray[0].midNormalNeutralMinionsKilledEnemyJungle;
-  dbChampion.midNormalTimePlayed += championsArray[0].midNormalTimePlayed;
+  if(championsArray[0].midNormalGames > 0){
+    if(!dbChampion.midNormalGames && championsArray[0].midNormalGames > 0){
+      dbChampion = createMidNormalFields(dbChampion);
+    }
+    if(championsArray[0].midNormalGames){
+      dbChampion.midNormalGames += championsArray[0].midNormalGames;
+    }
+    if(championsArray[0].midNormalMinionsKilled){
+      dbChampion.midNormalMinionsKilled += championsArray[0].midNormalMinionsKilled;
+    }
+    if(championsArray[0].midNormalNeutralMinionsKilled){
+      dbChampion.midNormalNeutralMinionsKilled += championsArray[0].midNormalNeutralMinionsKilled;
+    }
+    if(championsArray[0].midNormalNeutralMinionsKilledYourJungle){
+      dbChampion.midNormalNeutralMinionsKilledYourJungle += championsArray[0].midNormalNeutralMinionsKilledYourJungle;
+    }
+    if(championsArray[0].midNormalNeutralMinionsKilledEnemyJungle){
+      dbChampion.midNormalNeutralMinionsKilledEnemyJungle += championsArray[0].midNormalNeutralMinionsKilledEnemyJungle;
+    }
+    if(championsArray[0].midNormalTimePlayed){
+      dbChampion.midNormalTimePlayed += championsArray[0].midNormalTimePlayed;
+    }
+  }
 
-  dbChampion.jungleNormalGames += championsArray[0].jungleNormalGames;
-  dbChampion.jungleNormalMinionsKilled += championsArray[0].jungleNormalMinionsKilled;
-  dbChampion.jungleNormalNeutralMinionsKilled += championsArray[0].jungleNormalNeutralMinionsKilled;
-  dbChampion.jungleNormalNeutralMinionsKilledYourJungle += championsArray[0].jungleNormalNeutralMinionsKilledYourJungle;
-  dbChampion.jungleNormalNeutralMinionsKilledEnemyJungle += championsArray[0].jungleNormalNeutralMinionsKilledEnemyJungle;
-  dbChampion.jungleNormalTimePlayed += championsArray[0].jungleNormalTimePlayed;
+  if(championsArray[0].jungleNormalGames > 0){
+    if(!dbChampion.jungleNormalGames && championsArray[0].jungleNormalGames > 0){
+      dbChampion = createJungleNormalFields(dbChampion);
+    }
+    if(championsArray[0].jungleNormalGames){
+      dbChampion.jungleNormalGames += championsArray[0].jungleNormalGames;
+    }
+    if(championsArray[0].jungleNormalMinionsKilled){
+      dbChampion.jungleNormalMinionsKilled += championsArray[0].jungleNormalMinionsKilled;
+    }
+    if(championsArray[0].jungleNormalNeutralMinionsKilled){
+      dbChampion.jungleNormalNeutralMinionsKilled += championsArray[0].jungleNormalNeutralMinionsKilled;
+    }
+    if(championsArray[0].jungleNormalNeutralMinionsKilledYourJungle){
+      dbChampion.jungleNormalNeutralMinionsKilledYourJungle += championsArray[0].jungleNormalNeutralMinionsKilledYourJungle;
+    }
+    if(championsArray[0].jungleNormalNeutralMinionsKilledEnemyJungle){
+      dbChampion.jungleNormalNeutralMinionsKilledEnemyJungle += championsArray[0].jungleNormalNeutralMinionsKilledEnemyJungle;
+    }
+    if(championsArray[0].jungleNormalTimePlayed){
+      dbChampion.jungleNormalTimePlayed += championsArray[0].jungleNormalTimePlayed;
+    }
+  }
 
-  dbChampion.marksmanNormalGames += championsArray[0].marksmanNormalGames;
-  dbChampion.marksmanNormalMinionsKilled += championsArray[0].marksmanNormalMinionsKilled;
-  dbChampion.marksmanNormalNeutralMinionsKilled += championsArray[0].marksmanNormalNeutralMinionsKilled;
-  dbChampion.marksmanNormalNeutralMinionsKilledYourJungle += championsArray[0].marksmanNormalNeutralMinionsKilledYourJungle;
-  dbChampion.marksmanNormalNeutralMinionsKilledEnemyJungle += championsArray[0].marksmanNormalNeutralMinionsKilledEnemyJungle;
-  dbChampion.marksmanNormalTimePlayed += championsArray[0].marksmanNormalTimePlayed;
+  if(championsArray[0].marksmanNormalGames > 0){
+    if(!dbChampion.marksmanNormalGames && championsArray[0].marksmanNormalGames > 0){
+      dbChampion = createMarksmanNormalFields(dbChampion);
+    }
+    if(championsArray[0].marksmanNormalGames){
+      dbChampion.marksmanNormalGames += championsArray[0].marksmanNormalGames;
+    }
+    if(championsArray[0].marksmanNormalMinionsKilled){
+      dbChampion.marksmanNormalMinionsKilled += championsArray[0].marksmanNormalMinionsKilled;
+    }
+    if(championsArray[0].marksmanNormalNeutralMinionsKilled){
+      dbChampion.marksmanNormalNeutralMinionsKilled += championsArray[0].marksmanNormalNeutralMinionsKilled;
+    }
+    if(championsArray[0].marksmanNormalNeutralMinionsKilledYourJungle){
+      dbChampion.marksmanNormalNeutralMinionsKilledYourJungle += championsArray[0].marksmanNormalNeutralMinionsKilledYourJungle;
+    }
+    if(championsArray[0].marksmanNormalNeutralMinionsKilledEnemyJungle){
+      dbChampion.marksmanNormalNeutralMinionsKilledEnemyJungle += championsArray[0].marksmanNormalNeutralMinionsKilledEnemyJungle;
+    }
+    if(championsArray[0].marksmanNormalTimePlayed){
+      dbChampion.marksmanNormalTimePlayed += championsArray[0].marksmanNormalTimePlayed;
+    }
+  }
 
-  dbChampion.supportNormalGames += championsArray[0].supportNormalGames;
-  dbChampion.supportNormalMinionsKilled += championsArray[0].supportNormalMinionsKilled;
-  dbChampion.supportNormalNeutralMinionsKilled += championsArray[0].supportNormalNeutralMinionsKilled;
-  dbChampion.supportNormalNeutralMinionsKilledYourJungle += championsArray[0].supportNormalNeutralMinionsKilledYourJungle;
-  dbChampion.supportNormalNeutralMinionsKilledEnemyJungle += championsArray[0].supportNormalNeutralMinionsKilledEnemyJungle;
-  dbChampion.supportNormalTimePlayed += championsArray[0].supportNormalTimePlayed;
+  if(championsArray[0].supportNormalGames > 0){
+    if(!dbChampion.supportNormalGames && championsArray[0].supportNormalGames > 0){
+      dbChampion = createSupportNormalFields(dbChampion);
+    }
+    if(championsArray[0].supportNormalGames){
+      dbChampion.supportNormalGames += championsArray[0].supportNormalGames;
+    }
+    if(championsArray[0].supportNormalMinionsKilled){
+      dbChampion.supportNormalMinionsKilled += championsArray[0].supportNormalMinionsKilled;
+    }
+    if(championsArray[0].supportNormalNeutralMinionsKilled){
+      dbChampion.supportNormalNeutralMinionsKilled += championsArray[0].supportNormalNeutralMinionsKilled;
+    }
+    if(championsArray[0].supportNormalNeutralMinionsKilledYourJungle){
+      dbChampion.supportNormalNeutralMinionsKilledYourJungle += championsArray[0].supportNormalNeutralMinionsKilledYourJungle;
+    }
+    if(championsArray[0].supportNormalNeutralMinionsKilledEnemyJungle){
+      dbChampion.supportNormalNeutralMinionsKilledEnemyJungle += championsArray[0].supportNormalNeutralMinionsKilledEnemyJungle;
+    }
+    if(championsArray[0].supportNormalTimePlayed){
+      dbChampion.supportNormalTimePlayed += championsArray[0].supportNormalTimePlayed;
+    }
+  }
 
-  dbChampion.topRankedGames += championsArray[0].topRankedGames;
-  dbChampion.topRankedMinionsKilled += championsArray[0].topRankedMinionsKilled;
-  dbChampion.topRankedNeutralMinionsKilled += championsArray[0].topRankedNeutralMinionsKilled;
-  dbChampion.topRankedNeutralMinionsKilledYourJungle += championsArray[0].topRankedNeutralMinionsKilledYourJungle;
-  dbChampion.topRankedNeutralMinionsKilledEnemyJungle += championsArray[0].topRankedNeutralMinionsKilledEnemyJungle;
-  dbChampion.topRankedTimePlayed += championsArray[0].topRankedTimePlayed;
+  if(championsArray[0].topRankedGames > 0){
+    if(!dbChampion.topRankedGames && championsArray[0].topRankedGames > 0){
+      dbChampion = createTopRankedFields(dbChampion);
+    }
+    if(championsArray[0].topRankedGames){
+      dbChampion.topRankedGames += championsArray[0].topRankedGames;
+    }
+    if(championsArray[0].topRankedMinionsKilled){
+      dbChampion.topRankedMinionsKilled += championsArray[0].topRankedMinionsKilled;
+    }
+    if(championsArray[0].topRankedNeutralMinionsKilled){
+      dbChampion.topRankedNeutralMinionsKilled += championsArray[0].topRankedNeutralMinionsKilled;
+    }
+    if(championsArray[0].topRankedNeutralMinionsKilledYourJungle){
+      dbChampion.topRankedNeutralMinionsKilledYourJungle += championsArray[0].topRankedNeutralMinionsKilledYourJungle;
+    }
+    if(championsArray[0].topRankedNeutralMinionsKilledEnemyJungle){
+      dbChampion.topRankedNeutralMinionsKilledEnemyJungle += championsArray[0].topRankedNeutralMinionsKilledEnemyJungle;
+    }
+    if(championsArray[0].topRankedTimePlayed){
+      dbChampion.topRankedTimePlayed += championsArray[0].topRankedTimePlayed;
+    }
+  }
 
-  dbChampion.midRankedGames += championsArray[0].midRankedGames;
-  dbChampion.midRankedMinionsKilled += championsArray[0].midRankedMinionsKilled;
-  dbChampion.midRankedNeutralMinionsKilled += championsArray[0].midRankedNeutralMinionsKilled;
-  dbChampion.midRankedNeutralMinionsKilledYourJungle += championsArray[0].midRankedNeutralMinionsKilledYourJungle
-  dbChampion.midRankedNeutralMinionsKilledEnemyJungle += championsArray[0].midRankedNeutralMinionsKilledEnemyJungle
-  dbChampion.midRankedTimePlayed += championsArray[0].midRankedTimePlayed;
+  if(championsArray[0].midRankedGames > 0){
+    if(!dbChampion.midRankedGames && championsArray[0].midRankedGames > 0){
+      dbChampion = createMidRankedFields(dbChampion);
+    }
+    if(championsArray[0].midRankedGames){
+      dbChampion.midRankedGames += championsArray[0].midRankedGames;
+    }
+    if(championsArray[0].midRankedMinionsKilled){
+      dbChampion.midRankedMinionsKilled += championsArray[0].midRankedMinionsKilled;
+    }
+    if(championsArray[0].midRankedNeutralMinionsKilled){
+      dbChampion.midRankedNeutralMinionsKilled += championsArray[0].midRankedNeutralMinionsKilled;
+    }
+    if(championsArray[0].midRankedNeutralMinionsKilledYourJungle){
+      dbChampion.midRankedNeutralMinionsKilledYourJungle += championsArray[0].midRankedNeutralMinionsKilledYourJungle;
+    }
+    if(championsArray[0].midRankedNeutralMinionsKilledEnemyJungle){
+      dbChampion.midRankedNeutralMinionsKilledEnemyJungle += championsArray[0].midRankedNeutralMinionsKilledEnemyJungle;
+    }
+    if(championsArray[0].midRankedTimePlayed){
+      dbChampion.midRankedTimePlayed += championsArray[0].midRankedTimePlayed;
+    }
+  }
 
-  dbChampion.jungleRankedGames += championsArray[0].jungleRankedGames;
-  dbChampion.jungleRankedMinionsKilled += championsArray[0].jungleRankedMinionsKilled;
-  dbChampion.jungleRankedNeutralMinionsKilled += championsArray[0].jungleRankedNeutralMinionsKilled;
-  dbChampion.jungleRankedNeutralMinionsKilledYourJungle += championsArray[0].jungleRankedNeutralMinionsKilledYourJungle;
-  dbChampion.jungleRankedNeutralMinionsKilledEnemyJungle += championsArray[0].jungleRankedNeutralMinionsKilledEnemyJungle;
-  dbChampion.jungleRankedTimePlayed += championsArray[0].jungleRankedTimePlayed;
+  if(championsArray[0].jungleRankedGames > 0){
+    if(!dbChampion.jungleRankedGames && championsArray[0].jungleRankedGames > 0){
+      dbChampion = createJungleRankedFields(dbChampion);
+    }
+    if(championsArray[0].jungleRankedGames){
+      dbChampion.jungleRankedGames += championsArray[0].jungleRankedGames;
+    }
+    if(championsArray[0].jungleRankedMinionsKilled){
+      dbChampion.jungleRankedMinionsKilled += championsArray[0].jungleRankedMinionsKilled;
+    }
+    if(championsArray[0].jungleRankedNeutralMinionsKilled){
+      dbChampion.jungleRankedNeutralMinionsKilled += championsArray[0].jungleRankedNeutralMinionsKilled;
+    }
+    if(championsArray[0].jungleRankedNeutralMinionsKilledYourJungle){
+      dbChampion.jungleRankedNeutralMinionsKilledYourJungle += championsArray[0].jungleRankedNeutralMinionsKilledYourJungle;
+    }
+    if(championsArray[0].jungleRankedNeutralMinionsKilledEnemyJungle){
+      dbChampion.jungleRankedNeutralMinionsKilledEnemyJungle += championsArray[0].jungleRankedNeutralMinionsKilledEnemyJungle;
+    }
+    if(championsArray[0].jungleRankedTimePlayed){
+      dbChampion.jungleRankedTimePlayed += championsArray[0].jungleRankedTimePlayed;
+    }
+  }
 
-  dbChampion.marksmanRankedGames += championsArray[0].marksmanRankedGames;
-  dbChampion.marksmanRankedMinionsKilled += championsArray[0].marksmanRankedMinionsKilled;
-  dbChampion.marksmanRankedNeutralMinionsKilled += championsArray[0].marksmanRankedNeutralMinionsKilled;
-  dbChampion.marksmanRankedNeutralMinionsKilledYourJungle += championsArray[0].marksmanRankedNeutralMinionsKilledYourJungle;
-  dbChampion.marksmanRankedNeutralMinionsKilledEnemyJungle += championsArray[0].marksmanRankedNeutralMinionsKilledEnemyJungle;
-  dbChampion.marksmanRankedTimePlayed += championsArray[0].marksmanRankedTimePlayed;
+  if(championsArray[0].marksmanRankedGames > 0){
+    if(!dbChampion.marksmanRankedGames && championsArray[0].marksmanRankedGames > 0){
+      dbChampion = createMarksmanRankedFields(dbChampion);
+    }
+    if(championsArray[0].marksmanRankedGames){
+      dbChampion.marksmanRankedGames += championsArray[0].marksmanRankedGames;
+    }
+    if(championsArray[0].marksmanRankedMinionsKilled){
+      dbChampion.marksmanRankedMinionsKilled += championsArray[0].marksmanRankedMinionsKilled;
+    }
+    if(championsArray[0].marksmanRankedNeutralMinionsKilled){
+      dbChampion.marksmanRankedNeutralMinionsKilled += championsArray[0].marksmanRankedNeutralMinionsKilled;
+    }
+    if(championsArray[0].marksmanRankedNeutralMinionsKilledYourJungle){
+      dbChampion.marksmanRankedNeutralMinionsKilledYourJungle += championsArray[0].marksmanRankedNeutralMinionsKilledYourJungle;
+    }
+    if(championsArray[0].marksmanRankedNeutralMinionsKilledEnemyJungle){
+      dbChampion.marksmanRankedNeutralMinionsKilledEnemyJungle += championsArray[0].marksmanRankedNeutralMinionsKilledEnemyJungle;
+    }
+    if(championsArray[0].marksmanRankedTimePlayed){
+      dbChampion.marksmanRankedTimePlayed += championsArray[0].marksmanRankedTimePlayed;
+    }
+  }
 
-  dbChampion.supportRankedGames += championsArray[0].supportRankedGames;
-  dbChampion.supportRankedMinionsKilled += championsArray[0].supportRankedMinionsKilled;
-  dbChampion.supportRankedNeutralMinionsKilled += championsArray[0].supportRankedNeutralMinionsKilled;
-  dbChampion.supportRankedNeutralMinionsKilledYourJungle += championsArray[0].supportRankedNeutralMinionsKilledYourJungle;
-  dbChampion.supportRankedNeutralMinionsKilledEnemyJungle += championsArray[0].supportRankedNeutralMinionsKilledEnemyJungle;
-  dbChampion.supportRankedTimePlayed += championsArray[0].supportRankedTimePlayed;
+  if(championsArray[0].supportRankedGames > 0){
+    if(!dbChampion.supportRankedGames && championsArray[0].supportRankedGames > 0){
+      dbChampion = createSupportRankedFields(dbChampion);
+    }
+    if(championsArray[0].supportRankedGames){
+      dbChampion.supportRankedGames += championsArray[0].supportRankedGames;
+    }
+    if(championsArray[0].supportRankedMinionsKilled){
+      dbChampion.supportRankedMinionsKilled += championsArray[0].supportRankedMinionsKilled;
+    }
+    if(championsArray[0].supportRankedNeutralMinionsKilled){
+      dbChampion.supportRankedNeutralMinionsKilled += championsArray[0].supportRankedNeutralMinionsKilled;
+    }
+    if(championsArray[0].supportRankedNeutralMinionsKilledYourJungle){
+      dbChampion.supportRankedNeutralMinionsKilledYourJungle += championsArray[0].supportRankedNeutralMinionsKilledYourJungle;
+    }
+    if(championsArray[0].supportRankedNeutralMinionsKilledEnemyJungle){
+      dbChampion.supportRankedNeutralMinionsKilledEnemyJungle += championsArray[0].supportRankedNeutralMinionsKilledEnemyJungle;
+    }
+    if(championsArray[0].supportRankedTimePlayed){
+      dbChampion.supportRankedTimePlayed += championsArray[0].supportRankedTimePlayed;
+    }
+  }
 }
 
 function getNewGames(gamesArray, summoner, newSummonerGamesArray){
@@ -801,81 +1064,6 @@ function getNewGames(gamesArray, summoner, newSummonerGamesArray){
   }
 
   return newSummonerGamesArray;
-}
-
-function resetCurrentChampion(currentChampion){
-  currentChampion.topNormalGames = 0;
-  currentChampion.topNormalMinionsKilled = 0;
-  currentChampion.topNormalNeutralMinionsKilled = 0;
-  currentChampion.topNormalNeutralMinionsKilledYourJungle = 0;
-  currentChampion.topNormalNeutralMinionsKilledEnemyJungle = 0;
-  currentChampion.topNormalTimePlayed = 0;
-
-  currentChampion.midNormalGames = 0;
-  currentChampion.midNormalMinionsKilled = 0;
-  currentChampion.midNormalNeutralMinionsKilled = 0;
-  currentChampion.midNormalNeutralMinionsKilledYourJungle = 0;
-  currentChampion.midNormalNeutralMinionsKilledEnemyJungle = 0;
-  currentChampion.midNormalTimePlayed = 0;
-
-  currentChampion.jungleNormalGames = 0;
-  currentChampion.jungleNormalMinionsKilled = 0;
-  currentChampion.jungleNormalNeutralMinionsKilled = 0;
-  currentChampion.jungleNormalNeutralMinionsKilledYourJungle = 0;
-  currentChampion.jungleNormalNeutralMinionsKilledEnemyJungle = 0;
-  currentChampion.jungleNormalTimePlayed = 0;
-
-  currentChampion.supportNormalGames = 0;
-  currentChampion.supportNormalMinionsKilled = 0;
-  currentChampion.supportNormalNeutralMinionsKilled = 0;
-  currentChampion.supportNormalNeutralMinionsKilledYourJungle = 0;
-  currentChampion.supportNormalNeutralMinionsKilledEnemyJungle = 0;
-  currentChampion.supportNormalTimePlayed = 0;
-
-  currentChampion.marksmanNormalGames = 0;
-  currentChampion.marksmanNormalMinionsKilled = 0;
-  currentChampion.marksmanNormalNeutralMinionsKilled = 0;
-  currentChampion.marksmanNormalNeutralMinionsKilledYourJungle = 0;
-  currentChampion.marksmanNormalNeutralMinionsKilledEnemyJungle = 0;
-  currentChampion.marksmanNormalTimePlayed = 0;
-
-  //RANKED GAMES
-  currentChampion.topRankedGames = 0;
-  currentChampion.topRankedMinionsKilled = 0;
-  currentChampion.topRankedNeutralMinionsKilled = 0;
-  currentChampion.topRankedNeutralMinionsKilledYourJungle = 0;
-  currentChampion.topRankedNeutralMinionsKilledEnemyJungle = 0;
-  currentChampion.topRankedTimePlayed = 0;
-
-  currentChampion.midRankedGames = 0;
-  currentChampion.midRankedMinionsKilled = 0;
-  currentChampion.midRankedNeutralMinionsKilled = 0;
-  currentChampion.midRankedNeutralMinionsKilledYourJungle = 0;
-  currentChampion.midRankedNeutralMinionsKilledEnemyJungle = 0;
-  currentChampion.midRankedTimePlayed = 0;
-
-  currentChampion.jungleRankedGames = 0;
-  currentChampion.jungleRankedMinionsKilled = 0;
-  currentChampion.jungleRankedNeutralMinionsKilled = 0;
-  currentChampion.jungleRankedNeutralMinionsKilledYourJungle = 0;
-  currentChampion.jungleRankedNeutralMinionsKilledEnemyJungle = 0;
-  currentChampion.jungleRankedTimePlayed = 0;
-
-  currentChampion.supportRankedGames = 0;
-  currentChampion.supportRankedMinionsKilled = 0;
-  currentChampion.supportRankedNeutralMinionsKilled = 0;
-  currentChampion.supportRankedNeutralMinionsKilledYourJungle = 0;
-  currentChampion.supportRankedNeutralMinionsKilledEnemyJungle = 0;
-  currentChampion.supportRankedTimePlayed = 0;
-
-  currentChampion.marksmanRankedGames = 0;
-  currentChampion.marksmanRankedMinionsKilled = 0;
-  currentChampion.marksmanRankedNeutralMinionsKilled = 0;
-  currentChampion.marksmanRankedNeutralMinionsKilledYourJungle = 0;
-  currentChampion.marksmanRankedNeutralMinionsKilledEnemyJungle = 0;
-  currentChampion.marksmanRankedTimePlayed = 0;
-
-  return currentChampion;
 }
 
 function filterGames(gamesArray, gamesResponseArray){
