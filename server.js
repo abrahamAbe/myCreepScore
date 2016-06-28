@@ -254,7 +254,7 @@ app.post('/searchSummoner', function(req, res, next) {
       //TODO move API key and urls to global variables and replace hardcoded region with dinamic region
       gamesRequest = APISlug + region + '/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=' + APIKey;
 
-      request.get(gamesRequest, function (error, response, body) {
+      request.get(gamesRequest, function (error, response, body) { console.log('EXECUTED GAMES REQUEST');
         if (!error && response.statusCode == 200) {
 
           var gamesData = JSON.parse(body),
@@ -311,10 +311,14 @@ app.post('/searchSummoner', function(req, res, next) {
               res.send({ message: 'Hello ' + ApiSummonerName + ', welcome to my creep score!', summoner: summoner, profileIconId: summonerData.profileIconId });
             });
           }
+
+          else if(gamesArray.length == 0){
+            return res.status(400).send({ message: 'Sorry, you must have at least one ranked or normal game on Summoner\'s Rift in your most recent 10 matches.'  });
+          }
         }
 
         else{
-          return res.status(400).send({ message: 'Teemo we have a problem, please try again!' });
+          return res.status(400).send({ message: 'Teemo, we have a problem, please try again!' });
         }
 
       });
