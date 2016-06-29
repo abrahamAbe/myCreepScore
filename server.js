@@ -193,7 +193,6 @@ app.post('/searchSummoner', function(req, res, next) {
       summonerRequest;
 
   //Riot API Request
-  //TODO move API key and urls to global variables and replace hardcoded region with dinamic region
   summonerRequest = APISlug + region + '/v1.4/summoner/by-name/' + summonerName + '?api_key=' + APIKey;
   async.waterfall([
     function(callback) {
@@ -251,10 +250,9 @@ app.post('/searchSummoner', function(req, res, next) {
         summonerId = summonerData.summonerId;
       }
 
-      //TODO move API key and urls to global variables and replace hardcoded region with dinamic region
       gamesRequest = APISlug + region + '/v1.3/game/by-summoner/' + summonerId + '/recent?api_key=' + APIKey;
 
-      request.get(gamesRequest, function (error, response, body) { console.log('EXECUTED GAMES REQUEST');
+      request.get(gamesRequest, function (error, response, body) {
         if (!error && response.statusCode == 200) {
 
           var gamesData = JSON.parse(body),
@@ -318,7 +316,7 @@ app.post('/searchSummoner', function(req, res, next) {
         }
 
         else{
-          return res.status(400).send({ message: 'Teemo, we have a problem, please try again!' });
+          return res.status(400).send({ message: 'Whoa, there was a problem, please try again!' });
         }
 
       });
@@ -344,6 +342,9 @@ function createCsAverages(summoner, summonerExists, gamesArray){
 
           currentChampion.championName = championsData[gamesArray[i].championId].championName;
         }
+        else{
+          currentChampion.championName = 'newChampion';
+        }
 
         //TODO add an else if champ doesn't exist---------------------------------------
 
@@ -351,7 +352,6 @@ function createCsAverages(summoner, summonerExists, gamesArray){
 
         //create new champion and add stats
         if(gamesArray[i].subType == 'NORMAL'){
-          //TODO call getPlayerPosition() and pass in champId + teamId
           currentChampion = calculateNormalCsAverages(currentChampion, gamesArray[i]);
         }
         else if(gamesArray[i].subType == 'RANKED_SOLO_5x5' || gamesArray[i].subType == 'RANKED_TEAM_5x5' || gamesArray[i].subType == 'RANKED_PREMADE_5x5'){
@@ -396,7 +396,6 @@ function createCsAverages(summoner, summonerExists, gamesArray){
           dbChampion = summoner.championsS6[i];
 
           updateChampion(dbChampion, championsArray);
-
         }
       }
 
@@ -406,13 +405,14 @@ function createCsAverages(summoner, summonerExists, gamesArray){
       }
       
     }
+    //if summoner doesn't exist and champion has valid data, add champion into new summoner champion's array
     else{
       if(!championsArray[0].noScores){
         summoner.championsS6.push(championsArray[0]);
       }
     }
 
-    //TODO mov into it's own function
+    //Reseting variables
     championsArray = [];
 
     championExists = false;
@@ -645,7 +645,7 @@ function calculateRankedCsAverages(currentChampion, currentGame){
   }
   else if((currentGame.stats.playerRole == '1' || currentGame.stats.playerRole == '3' || currentGame.stats.playerRole == '4') && currentGame.stats.playerPosition == '4'){
 
-    if(currentChampion.marksmanRankedGames){
+    if(!currentChampion.marksmanRankedGames){
       currentChampion = createMarksmanRankedFields(currentChampion);
     }
     currentChampion.marksmanRankedGames += 1;
@@ -801,15 +801,20 @@ function createSupportRankedFields(currentChampion){
 function createChampionModel(){
   var currentChampion = {
         championName: '',
-        championId: 0,
+        championId: 0
       };
 
   return currentChampion;
 }
 
 function updateChampion(dbChampion, championsArray){
-  console.log('CHAM,PIONS ARRAY');
+  console.log('UPDATING CHAMPION');
   console.log(championsArray[0]);
+
+  //updating champion name if newest released champion didn't hit the API before a summoner checked in games with that champion
+  if(dbChampion.championName == 'newChampion' && championsArray[0].championName != 'newChampion'){
+    dbChampion.championName = championsArray[0].championName;
+  }
 
   if(championsArray[0].topNormalGames > 0){
     if(!dbChampion.topNormalGames && championsArray[0].topNormalGames > 0){
