@@ -56,6 +56,12 @@ class Home extends React.Component {
     HomeActions.setSelectedChampionData(championData);
   }
 
+  changeSeason(season){
+    HomeActions.changeSeason(season);
+    //rerendering component when changing season
+    this.forceUpdate();
+  }
+
   render() {
     let championGrid = this.state.champions.map((champion) => {
       if(!this.state.showChampions && this.state.championsArray){
@@ -107,6 +113,10 @@ class Home extends React.Component {
         <div className={this.state.showChampions ? 'hidden' : 'summonerInfoContainer'}>
           <img className="summonerInfoIcon" src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/profileicon/' + this.state.profileIconId + '.png'} />
           <div className="summonerInfoName">{this.state.apiSummonerName}</div>
+        </div>
+        <div className={this.state.showSeasonButton ? 'seasonButtonContainer' : 'hidden'}>
+          <button className='btn summonerSearchBtn' onClick={this.changeSeason.bind(this, '6')}>Season 6</button>
+          <button className='btn summonerSearchBtn' onClick={this.changeSeason.bind(this, '7')}>Season 7</button>
         </div>
         <div className='gridContainer'>
           <div>{championGrid}</div>

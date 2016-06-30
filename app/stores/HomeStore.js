@@ -13,6 +13,10 @@ class HomeStore {
     this.profileIconId = '666';
     this.currentChampion;
     this.champion;
+    this.summonerData;
+    //CHANGE THIS FOR SEASON 7
+    this.showSeasonButton = false;
+    //this array is used to make the data dragon API calls
     this.champions = [
       { championId: 266, championName: 'Aatrox', title: 'The Darkin Bladee'},
       { championId: 103, championName: 'Ahri', title: 'The Nine-Tailed Fox'},
@@ -149,11 +153,23 @@ class HomeStore {
   }
 
   onSearchSummonerSuccess(summonerData) {
+    this.summonerData = summonerData;
     this.summonerNameValidationState = 'has-success';
     this.showChampions = false;
-    this.championsArray = summonerData.summoner.championsS6;
     this.profileIconId = summonerData.profileIconId;
     this.apiSummonerName = summonerData.summoner.summonerName;
+
+    //replace with championsS7 when S7 starts
+    this.championsArray = summonerData.summoner.championsS6;
+
+    //UNCOMMENT THIS FOR SEASON 7
+    //if summoner has recorded games in more than one season then display the seasons buttons
+    /*if(summonerData.summoner.championsS6.length > 0 && summonerData.summoner.championsS7.length > 0){
+      this.showSeasonButton = true;
+    }
+    else{
+      this.showSeasonButton = false;
+    }*/
 
     //clearing summoner name text field on submit
     this.summonerName = '';
@@ -169,6 +185,9 @@ class HomeStore {
     this.summonerNameValidationState = 'has-error';
     this.showChampions = true;
     toastr.error(errorMessage);
+    
+    //clearing summoner name text field on submit
+    this.summonerName = '';
   }
 
   onUpdateSummonerName(event) {
@@ -189,6 +208,18 @@ class HomeStore {
     this.currentChampion = championData.currentChampion;
     //sets homeStore champion object to pull correct champion images from the API's
     this.champion = championData.champion;
+  }
+
+  onChangeSeason(season){
+    for(var i = 0; i < this.champions.length; i ++){
+      this.champions[i].activeChampion = false;
+    }
+    if(season == '6'){
+      this.championsArray = this.summonerData.summoner.championsS6;
+    }
+    else if(season == '7'){
+      this.championsArray = this.summonerData.summoner.championsS7;
+    }
   }
 }
 

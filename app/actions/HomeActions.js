@@ -8,7 +8,8 @@ class HomeActions {
       'updateSummonerName',
       'invalidSummonerName',
       'updateRegion',
-      'setSelectedChampionData'
+      'setSelectedChampionData',
+      'changeSeason'
     );
   }
 

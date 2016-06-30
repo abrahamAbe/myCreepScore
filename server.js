@@ -279,7 +279,8 @@ app.post('/searchSummoner', function(req, res, next) {
               summoner = createCsAverages(summoner, summonerExists, newSummonerGamesArray);
 
               //updating last game ID
-              summoner.summonerLastGameId = currentLastGameId;
+              //replace with summonerLastGameIdSeason7 when S7 starts
+              summoner.summonerLastGameIdSeason6 = currentLastGameId;
 
               summoner.save(function(err) {
                 if (err) return next(err);
@@ -299,7 +300,8 @@ app.post('/searchSummoner', function(req, res, next) {
               summonerId: summonerId,
               summonerName: ApiSummonerName,
               summonerRegion: region,
-              summonerLastGameId: gamesArray[0].gameId
+              //replace with summonerLastGameIdSeason7 when S7 starts
+              summonerLastGameIdSeason6: gamesArray[0].gameId
             });
 
             summoner = createCsAverages(summoner, summonerExists, gamesArray);
@@ -388,11 +390,13 @@ function createCsAverages(summoner, summonerExists, gamesArray){
     //check if champion exists (passing in summoner exists flag), if it exists pull it out and add averages, if not just add him
     if(summonerExists){
 
+      //replace with championsS7 when S7 starts
       for(var i = 0; i < summoner.championsS6.length; i ++){
         //if champion alredy in db, pull it out and add new averages
         if(summoner.championsS6[i].championId == championsArray[0].championId){
 
           championExists = true;
+          //replace with championsS7 when S7 starts
           dbChampion = summoner.championsS6[i];
 
           updateChampion(dbChampion, championsArray);
@@ -401,6 +405,7 @@ function createCsAverages(summoner, summonerExists, gamesArray){
 
       //if champion doesn't exist in db, create new champion record and store it
       if(!championExists && !championsArray[0].noScores){
+        //replace with championsS7 when S7 starts
         summoner.championsS6.push(championsArray[0]);
       }
       
@@ -408,6 +413,7 @@ function createCsAverages(summoner, summonerExists, gamesArray){
     //if summoner doesn't exist and champion has valid data, add champion into new summoner champion's array
     else{
       if(!championsArray[0].noScores){
+        //replace with championsS7 when S7 starts
         summoner.championsS6.push(championsArray[0]);
       }
     }
@@ -1060,7 +1066,8 @@ function updateChampion(dbChampion, championsArray){
 function getNewGames(gamesArray, summoner, newSummonerGamesArray){
 
   for(var i = 0; i < gamesArray.length; i ++){
-    if(gamesArray[i].gameId != summoner.summonerLastGameId){
+    //replace with summonerLastGameIdSeason7 when S7 starts
+    if(gamesArray[i].gameId != summoner.summonerLastGameIdSeason6){
       newSummonerGamesArray.push(gamesArray[i]);
     }
     else{
