@@ -153,7 +153,7 @@ var championsData = {
     "143" :  { championId: 143, championName: 'Zyra', title: 'Rise of the Thorns'},
     };
 
-var APIKey = '97a53c56-dec1-4545-9f56-f2a650cb098a';
+
 var APISlug = 'https://na.api.pvp.net/api/lol/';
 
 var app = express();
