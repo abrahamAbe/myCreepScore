@@ -46,7 +46,9 @@ class Champion extends React.Component {
       this.championApiName = this.champion.championName;
 
       //Normal games scores
-      this.topNormalGames = this.currentChampion.topNormalGames;
+      if(this.currentChampion.topNormalGames){
+        this.topNormalGames = this.currentChampion.topNormalGames;
+      }
       this.topNormalCreepScore = (this.currentChampion.topNormalMinionsKilled + this.currentChampion.topNormalNeutralMinionsKilled) / this.currentChampion.topNormalGames;
 
       if(!this.topNormalCreepScore){
@@ -146,39 +148,41 @@ class Champion extends React.Component {
     };
     return (
       <div className={this.homeStore.apiSummonerName == 'noName' ? 'hidden' : 'championMainContainer container'}>
+        <div className="championInfoContainer">
+          <div className="championName">{this.championName}</div>
+          <div className="championTitle">{this.championTitle}</div>
+        </div>
         <div style={championImageContainerStyle} className="championImageContainer"></div>
-        <div className="championName">{this.championName}</div>
-        <div className="championTitle">{this.championTitle}</div>
         <div className="championStatsContainer">
           <div className="normalChampionStats statsContent">
             <div className="statsContentTitle">Normal (Summoner's Rift)</div>
             <div className="topSectionScores">
               <div className="statsContentScores">
-                <div>Top lane</div>
+                <div className="laneTitle">Top lane</div>
                 <div>Games: {this.topNormalGames}</div>
-                <div>Creep score: {this.topNormalCreepScore.toFixed(0)}</div>
+                <div>Cs/game: {this.topNormalCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
-                <div>Mid lane</div>
+                <div className="laneTitle">Mid lane</div>
                 <div>Games: {this.midNormalGames}</div>
-                <div>Creep score: {this.midNormalCreepScore.toFixed(0)}</div>
+                <div>Cs/game: {this.midNormalCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
-                <div>Jungle</div>
+                <div className="laneTitle">Jungle</div>
                 <div>Games: {this.jungleNormalGames}</div>
-                <div>Creep score: {this.jungleNormalCreepScore.toFixed(0)}</div>
+                <div>Cs/game: {this.jungleNormalCreepScore.toFixed(0)}</div>
               </div>
             </div>
             <div className="bottomSectionScores">
               <div className="statsContentScores">
-                <div>Marksman</div>
+                <div className="laneTitle">Marksman</div>
                 <div>Games: {this.marksmanNormalGames}</div>
-                <div>Creep score: {this.marksmanNormalCreepScore.toFixed(0)}</div>
+                <div>Cs/game: {this.marksmanNormalCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
-                <div>Support</div>
+                <div className="laneTitle">Support</div>
                 <div>Games: {this.supportNormalGames}</div>
-                <div>Creep score: {this.supportNormalCreepScore.toFixed(0)}</div>
+                <div>Cs/game: {this.supportNormalCreepScore.toFixed(0)}</div>
               </div>
             </div>
           </div>
@@ -186,31 +190,31 @@ class Champion extends React.Component {
             <div className="statsContentTitle">Ranked (Summoner's Rift)</div>
             <div className="topSectionScores">
               <div className="statsContentScores">
-                <div>Top lane</div>
+                <div className="laneTitle">Top lane</div>
                 <div>Games: {this.topRankedGames}</div>
-                <div>Creep score: {this.topRankedCreepScore.toFixed(0)}</div>
+                <div>Cs/game: {this.topRankedCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
-                <div>Mid lane</div>
+                <div className="laneTitle">Mid lane</div>
                 <div>Games: {this.midRankedGames}</div>
-                <div>Creep score: {this.midRankedCreepScore.toFixed(0)}</div>
+                <div>Cs/game: {this.midRankedCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
-                <div>Jungle</div>
+                <div className="laneTitle">Jungle</div>
                 <div>Games: {this.jungleRankedGames}</div>
-                <div>Creep score: {this.jungleRankedCreepScore.toFixed(0)}</div>
+                <div>Cs/game: {this.jungleRankedCreepScore.toFixed(0)}</div>
               </div>
             </div>
             <div className="bottomSectionScores">
               <div className="statsContentScores">
-                <div>Marksman</div>
+                <div className="laneTitle">Marksman</div>
                 <div>Games: {this.marksmanRankedGames}</div>
-                <div>Creep score: {this.marksmanRankedCreepScore.toFixed(0)}</div>
+                <div>Cs/game: {this.marksmanRankedCreepScore.toFixed(0)}</div>
               </div>
               <div className="statsContentScores">
-                <div>Support</div>
+                <div className="laneTitle">Support</div>
                 <div>Games: {this.supportRankedGames}</div>
-                <div>Creep score: {this.supportRankedCreepScore.toFixed(0)}</div>
+                <div>Cs/game: {this.supportRankedCreepScore.toFixed(0)}</div>
               </div>
             </div>
           </div>
