@@ -9,11 +9,13 @@
 		text-align: center;
 
 		.championName{
+			font-size: 20px;
 			font-weight: bold;
 			margin-bottom: 5px;
 		}
 
 		.championTitle{
+			font-size: 20px;
 			margin-bottom: 10px;
 		}
 	}
@@ -33,6 +35,11 @@
 			width: 40%;
 			display: inline-block;
 			padding-top: 10px;
+			vertical-align: top;
+
+			.responsive(995px, {
+		        width: 45%;
+		    });
 
 			.statsContentTitle{
 				font-weight: bold;
@@ -56,6 +63,10 @@
 				display: inline-block;
 				margin-top: 20px;
 				margin-left: 20px;
+
+				.responsive(400px, {
+			        margin-left: 0px;
+			    });
 			}
 		}
 	}

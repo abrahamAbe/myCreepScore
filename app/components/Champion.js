@@ -173,7 +173,8 @@ class Champion extends React.Component {
         <div style={championImageContainerStyle} className="championImageContainer"></div>
         <div className="championStatsContainer">
           <div className="normalChampionStats statsContent">
-            <div className="statsContentTitle">Normal (Summoner's Rift)</div>
+            <div className="statsContentTitle">Normal</div>
+            <div className="statsContentTitle">(Summoner's Rift)</div>
             <div className="topSectionScores">
               <div className="statsContentScores">
                 <div className="laneTitle">Top lane</div>
@@ -205,7 +206,8 @@ class Champion extends React.Component {
             </div>
           </div>
           <div className="rankedChampionStats statsContent">
-            <div className="statsContentTitle">Ranked (Summoner's Rift)</div>
+            <div className="statsContentTitle">Ranked</div>
+            <div className="statsContentTitle">(Summoner's Rift)</div>
             <div className="topSectionScores">
               <div className="statsContentScores">
                 <div className="laneTitle">Top lane</div>
