@@ -135,7 +135,6 @@ class Home extends React.Component {
           <button className='btn summonerSearchBtn' onClick={this.changeSeason.bind(this, '7')}>Season 7</button>
         </div>
         <div className='gridContainer'>
-          TOUCH ME MIGUEL 8=====================D
           <div>{championGrid}</div>
         </div>
       </div>
