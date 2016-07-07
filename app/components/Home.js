@@ -117,7 +117,7 @@ class Home extends React.Component {
           <div className="instructionsTitle">Find out how good you are at CSing!</div>
           <div className="instructionsContent">
             <div className="instructionsContentTitle">What does the info mean</div>
-            <div>Each champion displays the number of recorded games per lane (top, mid, jungle, marksman and support), followed by the average creep score for said lane, also, 
+            <div>Each champion displays it's number of recorded games per lane (top, mid, jungle, marksman and support), followed by the average creep score for said lane, also, 
             scores are divided by normal and ranked games.</div>
             <div className="instructionsContentTitle">How are the averages created</div>
             <div>The app will pull a summoner's most recent 10 matches and CS averages will be created based on those games. If more games are played and a new search is executed, 
@@ -127,7 +127,7 @@ class Home extends React.Component {
           </div>
         </div>
         <div className={this.state.showChampions ? 'hidden' : 'summonerInfoContainer'}>
-          <img className="summonerInfoIcon" src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/profileicon/' + this.state.profileIconId + '.png'} />
+          <img className="summonerInfoIcon" src={'http://ddragon.leagueoflegends.com/cdn/6.13.1/img/profileicon/' + this.state.profileIconId + '.png'} />
           <div className="summonerInfoName">{this.state.apiSummonerName}</div>
         </div>
         <div className={this.state.showSeasonButton ? 'seasonButtonContainer' : 'hidden'}>

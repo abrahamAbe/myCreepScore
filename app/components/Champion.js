@@ -55,28 +55,36 @@ class Champion extends React.Component {
         this.topNormalCreepScore = 0;
       }
 
-      this.midNormalGames = this.currentChampion.midNormalGames;
+      if(this.currentChampion.midNormalGames){
+        this.midNormalGames = this.currentChampion.midNormalGames;
+      }
       this.midNormalCreepScore = (this.currentChampion.midNormalMinionsKilled + this.currentChampion.midNormalNeutralMinionsKilled) / this.currentChampion.midNormalGames;
 
       if(!this.midNormalCreepScore){
         this.midNormalCreepScore = 0;
       }
 
-      this.jungleNormalGames = this.currentChampion.jungleNormalGames;
+      if(this.currentChampion.jungleNormalGames){
+        this.jungleNormalGames = this.currentChampion.jungleNormalGames;
+      }
       this.jungleNormalCreepScore = (this.currentChampion.jungleNormalMinionsKilled + this.currentChampion.jungleNormalNeutralMinionsKilled) / this.currentChampion.jungleNormalGames;
 
       if(!this.jungleNormalCreepScore){
         this.jungleNormalCreepScore = 0;
       }
 
-      this.marksmanNormalGames = this.currentChampion.marksmanNormalGames;
+      if(this.currentChampion.marksmanNormalGames){
+        this.marksmanNormalGames = this.currentChampion.marksmanNormalGames;
+      }
       this.marksmanNormalCreepScore = (this.currentChampion.marksmanNormalMinionsKilled + this.currentChampion.marksmanNormalNeutralMinionsKilled) / this.currentChampion.marksmanNormalGames;
 
       if(!this.marksmanNormalCreepScore){
         this.marksmanNormalCreepScore = 0;
       }
 
-      this.supportNormalGames = this.currentChampion.supportNormalGames;
+      if(this.currentChampion.supportNormalGames){
+        this.supportNormalGames = this.currentChampion.supportNormalGames;
+      }
       this.supportNormalCreepScore = (this.currentChampion.supportNormalMinionsKilled + this.currentChampion.supportNormalNeutralMinionsKilled) / this.currentChampion.supportNormalGames;
 
       if(!this.supportNormalCreepScore){
@@ -84,35 +92,45 @@ class Champion extends React.Component {
       }
 
       //Ranked games scores
-      this.topRankedGames = this.currentChampion.topRankedGames;
+      if(this.currentChampion.topRankedGames){
+        this.topRankedGames = this.currentChampion.topRankedGames;
+      }
       this.topRankedCreepScore = (this.currentChampion.topRankedMinionsKilled + this.currentChampion.topRankedNeutralMinionsKilled) / this.currentChampion.topRankedGames;
 
       if(!this.topRankedCreepScore){
         this.topRankedCreepScore = 0;
       }
 
-      this.midRankedGames = this.currentChampion.midRankedGames;
+      if(this.currentChampion.midRankedGames){
+        this.midRankedGames = this.currentChampion.midRankedGames;
+      }
       this.midRankedCreepScore = (this.currentChampion.midRankedMinionsKilled + this.currentChampion.midRankedNeutralMinionsKilled) / this.currentChampion.midRankedGames;
 
       if(!this.midRankedCreepScore){
         this.midRankedCreepScore = 0;
       }
 
-      this.jungleRankedGames = this.currentChampion.jungleRankedGames;
+      if(this.currentChampion.jungleRankedGames){
+        this.jungleRankedGames = this.currentChampion.jungleRankedGames;
+      }
       this.jungleRankedCreepScore = (this.currentChampion.jungleRankedMinionsKilled + this.currentChampion.jungleRankedNeutralMinionsKilled) / this.currentChampion.jungleRankedGames;
 
       if(!this.jungleRankedCreepScore){
         this.jungleRankedCreepScore = 0;
       }
 
-      this.marksmanRankedGames = this.currentChampion.marksmanRankedGames;
+      if(this.currentChampion.marksmanRankedGames){
+        this.marksmanRankedGames = this.currentChampion.marksmanRankedGames;
+      }
       this.marksmanRankedCreepScore = (this.currentChampion.marksmanRankedMinionsKilled + this.currentChampion.marksmanRankedNeutralMinionsKilled) / this.currentChampion.marksmanRankedGames;
 
       if(!this.marksmanRankedCreepScore){
         this.marksmanRankedCreepScore = 0;
       }
 
-      this.supportRankedGames = this.currentChampion.supportRankedGames;
+      if(this.currentChampion.supportRankedGames){
+        this.supportRankedGames = this.currentChampion.supportRankedGames;
+      }
       this.supportRankedCreepScore = (this.currentChampion.supportRankedMinionsKilled + this.currentChampion.supportRankedNeutralMinionsKilled) / this.currentChampion.supportRankedGames;
 
       if(!this.supportRankedCreepScore){
