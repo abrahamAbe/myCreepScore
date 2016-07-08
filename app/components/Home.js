@@ -62,6 +62,11 @@ class Home extends React.Component {
     this.forceUpdate();
   }
 
+  switchMainScreen(){
+    console.log('SWAPING SCREEN');
+    HomeActions.switchMainScreen();
+  }
+
   render() {
     let championGrid = this.state.champions.map((champion) => {
       if(!this.state.showChampions && this.state.championsArray){
@@ -136,6 +141,10 @@ class Home extends React.Component {
         </div>
         <div className='gridContainer'>
           <div>{championGrid}</div>
+        </div>
+        <div className={this.state.showMainPageNavigation ? 'navigationLink' : 'hidden'} onClick={this.switchMainScreen.bind()}>
+          <Link to={'/'} className={this.state.showChampions ? 'hidden' : ''}>Back To Home Page</Link>
+          <Link to={'/'} className={this.state.showChampions ? '' : 'hidden'}>Back To Champions Page</Link>
         </div>
       </div>
     );

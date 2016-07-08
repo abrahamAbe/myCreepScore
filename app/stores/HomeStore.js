@@ -9,6 +9,7 @@ class HomeStore {
     this.region = 'na';
     this.summonerNameValidationState;
     this.showChampions = true;
+    this.showMainPageNavigation = false;
     this.championsArray;
     this.profileIconId = '666';
     this.currentChampion;
@@ -156,6 +157,7 @@ class HomeStore {
     this.summonerData = summonerData;
     this.summonerNameValidationState = 'has-success';
     this.showChampions = false;
+    this.showMainPageNavigation = true;
     this.profileIconId = summonerData.profileIconId;
     this.apiSummonerName = summonerData.summoner.summonerName;
 
@@ -184,6 +186,7 @@ class HomeStore {
   onSearchSummonerFail(errorMessage) {
     this.summonerNameValidationState = 'has-error';
     this.showChampions = true;
+    this.showMainPageNavigation = false;
     toastr.error(errorMessage);
     
     //clearing summoner name text field on submit
@@ -220,6 +223,11 @@ class HomeStore {
     else if(season == '7'){
       this.championsArray = this.summonerData.summoner.championsS7;
     }
+  }
+
+  onSwitchMainScreen(){
+    console.log('SWAPING');
+    this.showChampions = !this.showChampions;
   }
 }
 

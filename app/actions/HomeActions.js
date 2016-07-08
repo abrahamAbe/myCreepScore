@@ -9,7 +9,8 @@ class HomeActions {
       'invalidSummonerName',
       'updateRegion',
       'setSelectedChampionData',
-      'changeSeason'
+      'changeSeason',
+      'switchMainScreen'
     );
   }
 

@@ -142,8 +142,8 @@ class Champion extends React.Component {
   componentDidMount() {
     ChampionStore.listen(this.onChange);
     if(!this.homeStore.champion){
-      //window.location.href = 'http://mycreepscore.herokuapp.com/';
-      window.location.href = 'http://localhost:3000/';
+      window.location.href = 'http://mycreepscore.herokuapp.com/';
+      //window.location.href = 'http://localhost:3000/';
     }
   }
 
@@ -240,7 +240,7 @@ class Champion extends React.Component {
           </div>
         </div>
         <div className="backButton">
-          <Link to={'/'}>Back To Home Page</Link>
+          <Link to={'/'}>Back To Champions Page</Link>
         </div>
       </div>
     );
