@@ -63,7 +63,6 @@ class Home extends React.Component {
   }
 
   switchMainScreen(){
-    console.log('SWAPING SCREEN');
     HomeActions.switchMainScreen();
   }
 
@@ -143,8 +142,8 @@ class Home extends React.Component {
           <div>{championGrid}</div>
         </div>
         <div className={this.state.showMainPageNavigation ? 'navigationLink' : 'hidden'} onClick={this.switchMainScreen.bind()}>
-          <Link to={'/'} className={this.state.showChampions ? 'hidden' : ''}>Back To Home Page</Link>
-          <Link to={'/'} className={this.state.showChampions ? '' : 'hidden'}>Back To Champions Page</Link>
+          <Link to={'/'} className={this.state.showChampions ? 'hidden' : ''}>Go To Home Page</Link>
+          <Link to={'/'} className={this.state.showChampions ? '' : 'hidden'}>Go To Champions Page</Link>
         </div>
       </div>
     );

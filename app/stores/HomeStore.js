@@ -226,7 +226,6 @@ class HomeStore {
   }
 
   onSwitchMainScreen(){
-    console.log('SWAPING');
     this.showChampions = !this.showChampions;
   }
 }
