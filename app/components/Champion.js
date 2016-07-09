@@ -239,8 +239,8 @@ class Champion extends React.Component {
             </div>
           </div>
         </div>
-        <div className="backButton">
-          <Link to={'/'}>Back To Champions Page</Link>
+        <div className="championPageNavigationContainer">
+          <Link to={'/'}><span className="championPageNavigation">Go To Champions Page</span></Link>
         </div>
       </div>
     );

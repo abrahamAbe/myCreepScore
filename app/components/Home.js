@@ -142,8 +142,8 @@ class Home extends React.Component {
           <div>{championGrid}</div>
         </div>
         <div className={this.state.showMainPageNavigation ? 'navigationLink' : 'hidden'} onClick={this.switchMainScreen.bind()}>
-          <Link to={'/'} className={this.state.showChampions ? 'hidden' : ''}>Go To Home Page</Link>
-          <Link to={'/'} className={this.state.showChampions ? '' : 'hidden'}>Go To Champions Page</Link>
+          <Link to={'/'} className={this.state.showChampions ? 'hidden' : ''}><span className="navigationLinkContent">Go To Home Page</span></Link>
+          <Link to={'/'} className={this.state.showChampions ? '' : 'hidden'}><span className="navigationLinkContent">Go To Champions Page</span></Link>
         </div>
       </div>
     );
