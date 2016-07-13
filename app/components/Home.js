@@ -80,7 +80,7 @@ class Home extends React.Component {
           <div className="championPortraitContainer" key={champion.championId}>
             <div className={champion.activeChampion ? '' : 'championContentDisabled'}>
               <Link to={'/champion/' + champion.championId}>
-                <img onClick={this.setSelectedChampionData.bind(this, champion)} className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.12.1/img/champion/' + champion.championName + '.png'} />
+                <img onClick={this.setSelectedChampionData.bind(this, champion)} className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.14.2/img/champion/' + champion.championName + '.png'} />
               </Link>
             </div>
           </div>
