@@ -74,6 +74,7 @@ var championsData = {
     "85" :  { championId: 85, championName: 'Kennen', title: 'The Heart of the Tempest'},
     "121" :  { championId: 121, championName: 'Kha\'Zix', title: 'The Voidreaver'},
     "203" :  { championId: 203, championName: 'Kindred', title: 'The Eternal Hunters'},
+    "240" :  { championId: 240, championName: 'Kled', title: 'The Cantankerous Cavalier'},
     "96" :  { championId: 96, championName: 'Kog\'Maw', title: 'The Mouth of the Abyss'},
     "7" :  { championId: 7, championName: 'LeBlanc', title: 'The Deceiver'},
     "64" :  { championId: 64, championName: 'Lee Sin', title: 'The Blind Monk'},
@@ -153,7 +154,7 @@ var championsData = {
     "143" :  { championId: 143, championName: 'Zyra', title: 'Rise of the Thorns'},
     };
 
-
+var APIKey = 'RGAPI-6E3C54FB-BED8-4639-AF84-90AC198D8831';
 var APISlug = 'https://na.api.pvp.net/api/lol/';
 
 var app = express();

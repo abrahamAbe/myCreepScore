@@ -20,7 +20,7 @@ class HomeStore {
     //this array is used to make the data dragon API calls
     this.champions = [
       { championId: 266, championName: 'Aatrox', title: 'The Darkin Bladee'},
-      { championId: 103, championName: 'Ahri', title: 'The Nine-Tailed Fox'},
+      
       { championId: 84, championName: 'Akali', title: 'The Fist of Shadow'},
       { championId: 12, championName: 'Alistar', title: 'The Minotaur'},
       { championId: 32, championName: 'Amumu', title: 'The Sad Mummy'},
@@ -73,6 +73,7 @@ class HomeStore {
       { championId: 85, championName: 'Kennen', title: 'The Heart of the Tempest'},
       { championId: 121, championName: 'Khazix', title: 'The Voidreaver'},
       { championId: 203, championName: 'Kindred', title: 'The Eternal Hunters'},
+      { championId: 240, championName: 'Kled', title: 'The Cantankerous Cavalier'},
       { championId: 96, championName: 'KogMaw', title: 'The Mouth of the Abyss'},
       { championId: 7, championName: 'Leblanc', title: 'The Deceiver'},
       { championId: 64, championName: 'LeeSin', title: 'The Blind Monk'},
