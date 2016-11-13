@@ -59,6 +59,7 @@ var championsData = {
     "74" :  { championId: 74, championName: 'Heimerdinger', title: 'The Revered Inventor'},
     "420" :  { championId: 420, championName: 'Illaoi', title: 'The Kraken Priestess'},
     "39" :  { championId: 39, championName: 'Irelia', title: 'The Will of the Blades'},
+    "427" :  { championId: 427, championName: 'Ivern', title: 'The Green Father'},
     "40" :  { championId: 40, championName: 'Janna', title: 'the Storm\'s Fury'},
     "59" :  { championId: 59, championName: 'Jarvan IV', title: 'The Exemplar of Demacia'},
     "24" :  { championId: 24, championName: 'Jax', title: 'Grandmaster at Arms'},
@@ -154,7 +155,7 @@ var championsData = {
     "143" :  { championId: 143, championName: 'Zyra', title: 'Rise of the Thorns'},
     };
 
-
+var APIKey = 'RGAPI-6E3C54FB-BED8-4639-AF84-90AC198D8831';
 var APISlug = 'https://na.api.pvp.net/api/lol/';
 
 var app = express();
