@@ -34,6 +34,7 @@ class HomeStore {
       { championId: 63, championName: 'Brand', title: 'The Burning Vengeance'},
       { championId: 201, championName: 'Braum', title: 'The Heart of the Freljord'},
       { championId: 51, championName: 'Caitlyn', title: 'The Sheriff of Piltover'},
+      { championId: 164, championName: 'Camille', title: 'The Steel Shadow'},
       { championId: 69, championName: 'Cassiopeia', title: 'The Serpent\'s Embrace'},
       { championId: 31, championName: 'Chogath', title: 'The Terror of the Void'},
       { championId: 42, championName: 'Corki', title: 'The Daring Bombardier'},

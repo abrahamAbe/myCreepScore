@@ -80,7 +80,7 @@ class Home extends React.Component {
           <div className="championPortraitContainer" key={champion.championId}>
             <div className={champion.activeChampion ? '' : 'championContentDisabled'}>
               <Link to={'/champion/' + champion.championId}>
-                <img onClick={this.setSelectedChampionData.bind(this, champion)} className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/6.22.1/img/champion/' + champion.championName + '.png'} />
+                <img onClick={this.setSelectedChampionData.bind(this, champion)} className='thumb-md championImage' src={'http://ddragon.leagueoflegends.com/cdn/7.2.1/img/champion/' + champion.championName + '.png'} />
               </Link>
             </div>
           </div>
@@ -131,7 +131,7 @@ class Home extends React.Component {
           </div>
         </div>
         <div className={this.state.showChampions ? 'hidden' : 'summonerInfoContainer'}>
-          <img className="summonerInfoIcon" src={'http://ddragon.leagueoflegends.com/cdn/6.22.1/img/profileicon/' + this.state.profileIconId + '.png'} />
+          <img className="summonerInfoIcon" src={'http://ddragon.leagueoflegends.com/cdn/7.2.1/img/profileicon/' + this.state.profileIconId + '.png'} />
           <div className="summonerInfoName">{this.state.apiSummonerName}</div>
         </div>
         <div className={this.state.showSeasonButton ? 'seasonButtonContainer' : 'hidden'}>

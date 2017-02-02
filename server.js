@@ -35,6 +35,7 @@ var championsData = {
     "63" :  { championId: 63, championName: 'Brand', title: 'The Burning Vengeance'},
     "201" :  { championId: 201, championName: 'Braum', title: 'The Heart of the Freljord'},
     "51" :  { championId: 51, championName: 'Caitlyn', title: 'The Sheriff of Piltover'},
+    "164" :  { championId: 164, championName: 'Camille', title: 'The Steel Shadow'},
     "69" :  { championId: 69, championName: 'Cassiopeia', title: 'The Serpent\'s Embrace'},
     "31" :  { championId: 31, championName: 'Cho\'Gath', title: 'The Terror of the Void'},
     "42" :  { championId: 42, championName: 'Corki', title: 'The Daring Bombardier'},
